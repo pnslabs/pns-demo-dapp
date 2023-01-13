@@ -97,26 +97,7 @@ export default function Profile({ currentIndex }: { currentIndex: number }) {
           </div>
           <div className="px-24 flex flex-col gap-4">
             {items.map((item, index) => (
-              <div key={index} className="flex items-center">
-                <div className="w-4/6 flex items-center gap-12">
-                  <div className="flex items-center gap-2">
-                    {item.icon}
-                    <div className="font-bold text-lg text-white">
-                      {item.title}
-                    </div>
-                  </div>
-                  <div
-                    className={`${
-                      item.address ? "pink" : "gray"
-                    } text-lg font-medium`}
-                  >
-                    {item.address || "Not Set"}
-                  </div>
-                </div>
-                <div className="font-bold text-lg red cursor-pointer">
-                  {item.address ? "Update Address" : "Set Address"}
-                </div>
-              </div>
+              <Item key={index} item={item} />
             ))}
           </div>
         </div>
@@ -124,3 +105,24 @@ export default function Profile({ currentIndex }: { currentIndex: number }) {
     </div>
   );
 }
+
+const Item = ({ item }: { item: any }) => {
+  return (
+    <div className="flex items-center">
+      <div className="w-4/6 flex items-center gap-12">
+        <div className="flex items-center gap-2">
+          {item.icon}
+          <div className="font-bold text-lg text-white">{item.title}</div>
+        </div>
+        <div
+          className={`${item.address ? "pink" : "gray"} text-lg font-medium`}
+        >
+          {item.address || "Not Set"}
+        </div>
+      </div>
+      <div className="font-bold text-lg red cursor-pointer">
+        {item.address ? "Update Address" : "Set Address"}
+      </div>
+    </div>
+  );
+};
