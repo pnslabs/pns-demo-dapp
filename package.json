@@ -14,10 +14,16 @@
     "@types/react-dom": "18.0.10",
     "eslint": "8.31.0",
     "eslint-config-next": "13.1.1",
+    "ethers": "^5.7.2",
+    "moralis": "^2.11.0",
+    "moralis-v1": "^1.12.0",
     "next": "13.1.1",
     "react": "18.2.0",
     "react-dom": "18.2.0",
-    "typescript": "4.9.4"
+    "react-moralis": "^1.4.2",
+    "typescript": "4.9.4",
+    "web3": "^1.8.1",
+    "web3uikit": "^1.0.4"
   },
   "devDependencies": {
     "autoprefixer": "^10.4.13",
