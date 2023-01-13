@@ -48,17 +48,20 @@ export default function Detail({ currentIndex }: { currentIndex?: number }) {
       {isWeb3Enabled && (
         <div className="absolute bottom-10 left-10">
           <div className="flex flex-col items-center justify-center">
-            <div className="text-white font-bold text-sm">{`${account?.slice(
-              0,
-              6
-            )}...${account?.slice(account?.length - 4)}`}</div>
+            <div className="flex items-center gap-2">
+              <div className="active" />
+              <div className="text-white font-bold text-sm">{`${account?.slice(
+                0,
+                6
+              )}...${account?.slice(account?.length - 4)}`}</div>
+            </div>
             <button onClick={handleDisconnect} className="disconnect mt-3">
               Disconnect
             </button>
           </div>
         </div>
       )}
-      <div className="flex relative justify-end mt-10 xl:px-10 px-5">
+      <div className="flex relative justify-end mt-10 xl:px-16 px-5">
         <div className="detail-bg py-10 px-20">
           <div className="flex justify-between">
             <div className="green">+971 54 754 6254</div>

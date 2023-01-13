@@ -58,7 +58,7 @@ a {
   border-radius: 0px 12px 12px 0px;
 }
 .detail-bg {
-  width: 85%;
+  width: 83%;
   height: 635px;
   background: #0f0923;
   border: 0.2px solid #f8c6c6;
@@ -135,4 +135,16 @@ a {
 }
 .red {
   color: #e76565;
+}
+.active {
+  width: 12px;
+  height: 12px;
+  border-radius: 12px;
+  background: #13ff8e;
+}
+.inactive {
+  width: 12px;
+  height: 12px;
+  border-radius: 12px;
+  background: #f1b43d;
 }

@@ -1,3 +1,5 @@
+import Image from "next/image";
+import Link from "next/link";
 import { useMoralis } from "react-moralis";
 
 const Header = () => {
@@ -9,18 +11,23 @@ const Header = () => {
     }
   };
   return (
-    <header className="flex justify-between xl:px-10 px-5 py-4 items-center">
-      <div></div>
+    <header className="flex justify-between xl:px-16 px-5 py-4 items-center">
+      <Link href="/">
+        <Image src="/logo.svg" alt="logo" width={36} height={43} />
+      </Link>
       <div className="flex items-center gap-12">
         {isWeb3Enabled && (
-          <div className="font-semibold text-white cursor-pointer">
-            My Account
-          </div>
+          <Link href="/profile">
+            <div className="font-semibold text-white cursor-pointer">
+              My Account
+            </div>
+          </Link>
         )}
-        <div
+        <button
           onClick={handleConnectMetamask}
-          className="h-16 py-2 cursor-pointer px-10 flex justify-center items-center connect"
+          className="h-16 py-2 gap-4 cursor-pointer px-10 flex justify-center items-center connect"
         >
+          <div className={`${isWeb3Enabled ? "active" : "inactive"}`} />
           <div className="text-white">
             {!isWeb3Enabled
               ? "Connect Wallet"
@@ -28,7 +35,7 @@ const Header = () => {
                   account?.length - 4
                 )}`}
           </div>
-        </div>
+        </button>
       </div>
     </header>
   );

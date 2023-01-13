@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { useMoralis } from "react-moralis";
 import Web3 from "web3";
 import Header from "../components/header";
@@ -56,7 +55,7 @@ export default function Profile({ currentIndex }: { currentIndex: number }) {
           </div>
         </div>
       )}
-      <div className="flex relative justify-end mt-10 xl:px-10 px-5">
+      <div className="flex relative justify-end mt-10 xl:px-16 px-5">
         <div className="detail-bg">
           <div className="py-7 px-24 border-bottom pink font-bold text-2xl">
             +971 54 754 6254
