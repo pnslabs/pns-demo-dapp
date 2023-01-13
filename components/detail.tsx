@@ -1,8 +1,9 @@
 import { useState } from "react";
 import { useMoralis } from "react-moralis";
 import Web3 from "web3";
-import Header from "../components/header";
+import Header from "./header";
 import { BnbIcon } from "../public/icon";
+import { useRouter } from "next/router";
 
 const web3 = new Web3(
   "https://data-seed-prebsc-1-s1.binance.org:8545/" || "ws://localhost:8545"
@@ -21,14 +22,26 @@ const item = [
   },
 ];
 
-export default function Detail() {
+export default function Detail({ currentIndex }: { currentIndex?: number }) {
+  const router = useRouter();
+
   const { enableWeb3, isWeb3Enabled, account, deactivateWeb3 } = useMoralis();
-  const [currentIndex, setCurrentIndex] = useState(1);
+  const [loading, setLoading] = useState(false);
 
   const handleDisconnect = () => {
     deactivateWeb3();
   };
-  console.log(account, isWeb3Enabled);
+  const handleNext = () => {
+    setLoading(true);
+    setTimeout(() => {
+      setLoading(false);
+      if (currentIndex === 1) {
+        router.push("/profile");
+      } else {
+        router.push("/otp");
+      }
+    }, 2000);
+  };
   return (
     <div className="bg">
       <Header />
@@ -97,10 +110,18 @@ export default function Detail() {
             ))}
           </div>
           <div className="flex justify-end mt-20">
-            <button className="complete-btn">
-              {currentIndex === 1
-                ? "Verify Phone Number"
-                : "Complete Registration"}
+            <button onClick={handleNext} className="complete-btn">
+              {loading ? (
+                <div className="flex items-center justify-center my-2">
+                  <div className="animate-spin">C</div>
+                </div>
+              ) : (
+                <div>
+                  {currentIndex === 1
+                    ? "Verify Phone Number"
+                    : "Complete Registration"}
+                </div>
+              )}
             </button>
           </div>
         </div>
