@@ -1,10 +1,6 @@
-import { useEffect, useState } from "react";
-import { useMoralis, useWeb3Contract } from "react-moralis";
-import { contractAddresses, registryAbi, resolverAbi } from "../constants";
-import { useNotification } from "web3uikit";
-import { keccak256 } from "../utils";
+import { useState } from "react";
+import { useMoralis } from "react-moralis";
 import Web3 from "web3";
-import { ethers } from "ethers";
 import Header from "../components/header";
 import { BnbIcon } from "../public/icon";
 
