@@ -16,3 +16,39 @@ a {
 * {
   box-sizing: border-box;
 }
+
+.bg {
+  background: linear-gradient(0.45deg, #0f0923 34.26%, #461e24 104.22%);
+  min-height: 100vh;
+}
+
+.connect {
+  background: #200505;
+  backdrop-filter: blur(2px);
+  border-radius: 12px;
+}
+.connect-text {
+  font-family: "Brutal Type";
+  font-style: normal;
+  font-weight: 700;
+  font-size: 50px;
+  line-height: 110.5%;
+  text-align: center;
+  color: #ffcad3;
+}
+.search {
+  background: #1f1727;
+  border: 1px solid #f8c6c6;
+  border-radius: 12px 0px 0px 12px;
+  height: 87px;
+  width: 100%;
+  color: #f8c6c6;
+  font-size: 18px;
+  font-weight: 700;
+}
+.search-button {
+  width: 127px;
+  height: 87px;
+  background: #ffcad3;
+  border-radius: 0px 12px 12px 0px;
+}
