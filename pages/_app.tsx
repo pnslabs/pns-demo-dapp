@@ -1,23 +1,41 @@
 import "../styles/globals.css";
 import type { AppProps } from "next/app";
-import { MoralisProvider } from "react-moralis";
 import { NotificationProvider } from "web3uikit";
 import { registryAbi, resolverAbi } from "../constants";
 import Web3 from "web3";
+import { MetaMaskConnector } from "wagmi/connectors/metaMask";
+import { configureChains, createClient, WagmiConfig } from "wagmi";
+import { bscTestnet } from "wagmi/chains";
+import { jsonRpcProvider } from "wagmi/providers/jsonRpc";
 
-const registryAddress = "0x9d5a1f5Fde036f1b10E8Ff5BEC938D8b26a4c4bB";
-const resolverAddress = "0x6b1714EAC8968A01daA22f3Ff4BCf2FD03F66F66";
+export const projectId = process.env.NEXT_PUBLIC_PROJECT_ID;
 
-export const web3 = new Web3(
-  "https://data-seed-prebsc-1-s1.binance.org:8545/" || "ws://localhost:8545"
+// Wagmi client
+const { chains, provider } = configureChains(
+  [bscTestnet],
+  [
+    jsonRpcProvider({
+      rpc: () => ({
+        http: "https://data-seed-prebsc-1-s1.binance.org:8545/",
+      }),
+    }),
+  ],
 );
-export const contract = new web3.eth.Contract(registryAbi.abi, registryAddress);
+const wagmiClient = createClient({
+  provider,
+  connectors: [new MetaMaskConnector({ chains })],
+});
+
+// // Web3Modal Ethereum Client
+// const ethereumClient = new EthereumClient(wagmiClient, chains);
+
+// export const contract = new web3.eth.Contract(registryAbi.abi, registryAddress);
 export default function App({ Component, pageProps }: AppProps) {
   return (
-    <MoralisProvider initializeOnMount={false}>
+    <WagmiConfig client={wagmiClient}>
       <NotificationProvider>
         <Component {...pageProps} />
       </NotificationProvider>
-    </MoralisProvider>
+    </WagmiConfig>
   );
 }

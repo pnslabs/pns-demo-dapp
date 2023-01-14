@@ -1,13 +1,9 @@
 import { useState } from "react";
-import { useMoralis } from "react-moralis";
 import Web3 from "web3";
 import Header from "./header";
 import { BnbIcon } from "../public/icon";
 import { useRouter } from "next/router";
-
-const web3 = new Web3(
-  "https://data-seed-prebsc-1-s1.binance.org:8545/" || "ws://localhost:8545"
-);
+import { useAccount, useDisconnect } from "wagmi";
 
 const item = [
   {
@@ -24,12 +20,13 @@ const item = [
 
 export default function Detail({ currentIndex }: { currentIndex?: number }) {
   const router = useRouter();
+  const { isConnected, address } = useAccount();
+  const { disconnect } = useDisconnect();
 
-  const { enableWeb3, isWeb3Enabled, account, deactivateWeb3 } = useMoralis();
   const [loading, setLoading] = useState(false);
 
   const handleDisconnect = () => {
-    deactivateWeb3();
+    disconnect();
   };
   const handleNext = () => {
     setLoading(true);
@@ -45,15 +42,15 @@ export default function Detail({ currentIndex }: { currentIndex?: number }) {
   return (
     <div className="bg">
       <Header />
-      {isWeb3Enabled && (
+      {isConnected && (
         <div className="absolute bottom-10 left-10">
           <div className="flex flex-col items-center justify-center">
             <div className="flex items-center gap-2">
               <div className="active" />
-              <div className="text-white font-bold text-sm">{`${account?.slice(
+              <div className="text-white font-bold text-sm">{`${address?.slice(
                 0,
-                6
-              )}...${account?.slice(account?.length - 4)}`}</div>
+                6,
+              )}...${address?.slice(address?.length - 4)}`}</div>
             </div>
             <button onClick={handleDisconnect} className="disconnect mt-3">
               Disconnect

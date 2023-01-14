@@ -2,12 +2,16 @@ import { useState } from "react";
 import Detail from "../components/detail";
 import Header from "../components/header";
 import OtpComponent from "../components/OtpComponent";
+import { contract, web3 } from "./_app";
+import { contractAddresses, registryAbi, resolverAbi } from "../constants";
 
 const Otp = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [otp, setOtp] = useState("1234");
   const [showDetail, setShowDetail] = useState(false);
+
+  const verifyRecord = async () => {};
   return (
     <>
       {showDetail ? (
