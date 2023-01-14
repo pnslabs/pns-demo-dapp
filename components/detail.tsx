@@ -121,8 +121,8 @@ export default function Detail({ currentIndex }: { currentIndex?: number }) {
               ) : (
                 <div>
                   {currentIndex === 1
-                    ? "Verify Phone Number"
-                    : "Complete Registration"}
+                    ? "Complete Registration"
+                    : "Verify Phone Number"}
                 </div>
               )}
             </button>

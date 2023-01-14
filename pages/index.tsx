@@ -7,22 +7,52 @@ import Web3 from "web3";
 import { ethers } from "ethers";
 import Header from "../components/header";
 import Detail from "../components/detail";
+import { contract } from "./_app";
 const web3 = new Web3(
   "https://data-seed-prebsc-1-s1.binance.org:8545/" || "ws://localhost:8545"
 );
 
 export default function Home() {
   const { enableWeb3, isWeb3Enabled, account } = useMoralis();
+  const dispatch = useNotification();
+
   const [showDetail, setShowDetail] = useState(false);
   const [phone, setPhone] = useState("");
   const [loading, setLoading] = useState(false);
 
-  const handleNext = () => {
-    setLoading(true);
-    setTimeout(() => {
-      setShowDetail(true);
+  const handleNewNotification = (type: any, message: string, title: string) => {
+    dispatch({
+      type,
+      message,
+      title,
+      position: "topL",
+    });
+  };
+
+  const phoneHash = keccak256(phone);
+
+  const handleNext = async () => {
+    if (!isWeb3Enabled) {
+      handleNewNotification("info", "Please connect metamask!", "Notification");
+    } else {
+      setLoading(true);
+      const result = await contract.methods.recordExists(phoneHash).call();
+      if (!result) {
+        handleNewNotification(
+          "success",
+          "Phone number available!",
+          "Notification"
+        );
+        setShowDetail(true);
+      } else {
+        handleNewNotification(
+          "info",
+          "Phone number already taken!",
+          "Notification"
+        );
+      }
       setLoading(false);
-    }, 2000);
+    }
   };
   return (
     <>
