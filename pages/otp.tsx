@@ -2,8 +2,15 @@ import { useState } from "react";
 import Detail from "../components/detail";
 import Header from "../components/header";
 import OtpComponent from "../components/OtpComponent";
-import { contract, web3 } from "./_app";
-import { contractAddresses, registryAbi, resolverAbi } from "../constants";
+import {
+  prepareWriteContract,
+  waitForTransaction,
+  writeContract,
+  signMessage,
+} from "@wagmi/core";
+import { registryAddress, registryAbi, resolverAbi } from "../constants";
+import { ethers } from "ethers";
+import { keccak256 } from "../utils";
 
 const Otp = () => {
   const [loading, setLoading] = useState(false);
@@ -11,7 +18,36 @@ const Otp = () => {
   const [otp, setOtp] = useState("1234");
   const [showDetail, setShowDetail] = useState(false);
 
-  const verifyRecord = async () => {};
+  const phoneNumber = localStorage.getItem("phoneNumber");
+  const phoneHash = keccak256(phoneNumber);
+
+  const message = ethers.utils.solidityPack(
+    ["bytes32", "uint256"],
+    [phoneHash, otp],
+  );
+
+  const hashedMessage = ethers.utils.keccak256(message);
+  console.log(hashedMessage, "here");
+
+  const verifyAndCreateRecord = async () => {
+    const signature = await signMessage({ message: hashedMessage });
+
+    const config = await prepareWriteContract({
+      address: registryAddress,
+      abi: registryAbi.abi,
+      functionName: "verifyPhone",
+      args: [phoneHash, hashedMessage, true, signature],
+    });
+    const data = await writeContract(config);
+    console.log(data.hash);
+
+    const txResult = await waitForTransaction({
+      hash: data?.hash,
+    });
+    console.log(txResult, "transaction result for verification");
+    setShowDetail(true);
+  };
+
   return (
     <>
       {showDetail ? (
@@ -32,7 +68,7 @@ const Otp = () => {
                   loading={loading}
                 />
                 <button
-                  onClick={() => setShowDetail(true)}
+                  onClick={() => verifyRecord()}
                   className="complete-btn mt-7"
                 >
                   Verify OTP

@@ -20,14 +20,20 @@ const item = [
 
 export default function Detail({ currentIndex }: { currentIndex?: number }) {
   const router = useRouter();
+
+  const phoneNumber = localStorage.getItem("phoneNumber");
   const { isConnected, address } = useAccount();
   const { disconnect } = useDisconnect();
 
   const [loading, setLoading] = useState(false);
 
   const handleDisconnect = () => {
+    localStorage.removeItem("phoneNumber");
+
     disconnect();
   };
+
+  const createRecord = () => {};
   const handleNext = () => {
     setLoading(true);
     setTimeout(() => {
@@ -61,7 +67,7 @@ export default function Detail({ currentIndex }: { currentIndex?: number }) {
       <div className="flex relative justify-end mt-10 xl:px-16 px-5">
         <div className="detail-bg py-10 px-20">
           <div className="flex justify-between">
-            <div className="green">+971 54 754 6254</div>
+            <div className="green">{phoneNumber}</div>
             <div className="detail-box py-5 px-7">
               <div className="flex items-center justify-between">
                 <div className="fees">Fees</div>

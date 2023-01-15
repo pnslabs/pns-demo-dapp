@@ -5,7 +5,7 @@ import { readContract } from "@wagmi/core";
 import { useNotification } from "web3uikit";
 import { keccak256 } from "../utils";
 import Web3 from "web3";
-import { ethers } from "ethers";
+import ethers from "ethers";
 import Header from "../components/header";
 import Detail from "../components/detail";
 
@@ -45,6 +45,7 @@ export default function Home() {
           "Phone number available!",
           "Notification",
         );
+        localStorage.setItem("phoneNumber", phone);
         setShowDetail(true);
       } else {
         handleNewNotification(
@@ -70,7 +71,8 @@ export default function Home() {
               </div>
               <div className="flex mt-10 w-full">
                 <input
-                  onClick={(e: any) => setPhone(e.target.value)}
+                  onChange={(e: any) => setPhone(e.target.value)}
+                  value={phone}
                   className="search px-10"
                   placeholder="Enter phone number"
                 />
