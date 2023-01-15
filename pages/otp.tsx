@@ -6,9 +6,16 @@ import {
   prepareWriteContract,
   waitForTransaction,
   writeContract,
+  readContract,
   signMessage,
+  fetchSigner,
 } from "@wagmi/core";
-import { registryAddress, registryAbi, resolverAbi } from "../constants";
+import {
+  registryAddress,
+  resolverAddress,
+  registryAbi,
+  resolverAbi,
+} from "../constants";
 import { ethers } from "ethers";
 import { keccak256 } from "../utils";
 
@@ -30,8 +37,10 @@ const Otp = () => {
   console.log(hashedMessage, "here");
 
   const verifyRecord = async () => {
+    const signer = await fetchSigner();
+    console.log(signer, "signer");
     const signature = await signMessage({ message: hashedMessage });
-
+    console.log(signature, "signature");
     const config = await prepareWriteContract({
       address: registryAddress,
       abi: registryAbi.abi,
