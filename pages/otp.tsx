@@ -2,12 +2,61 @@ import { useState } from "react";
 import Detail from "../components/detail";
 import Header from "../components/header";
 import OtpComponent from "../components/OtpComponent";
+import {
+  prepareWriteContract,
+  waitForTransaction,
+  writeContract,
+  readContract,
+  signMessage,
+  fetchSigner,
+} from "@wagmi/core";
+import {
+  registryAddress,
+  resolverAddress,
+  registryAbi,
+  resolverAbi,
+} from "../constants";
+import { ethers } from "ethers";
+import { keccak256 } from "../utils";
 
 const Otp = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [otp, setOtp] = useState("1234");
   const [showDetail, setShowDetail] = useState(false);
+
+  const phoneNumber = localStorage.getItem("phoneNumber");
+  const phoneHash = keccak256(phoneNumber);
+
+  const message = ethers.utils.solidityPack(
+    ["bytes32", "uint256"],
+    [phoneHash, otp],
+  );
+
+  const hashedMessage = ethers.utils.keccak256(message);
+  console.log(hashedMessage, "here");
+
+  const verifyRecord = async () => {
+    const signer = await fetchSigner();
+    console.log(signer, "signer");
+    const signature = await signMessage({ message: hashedMessage });
+    console.log(signature, "signature");
+    const config = await prepareWriteContract({
+      address: registryAddress,
+      abi: registryAbi.abi,
+      functionName: "verifyPhone",
+      args: [phoneHash, hashedMessage, true, signature],
+    });
+    const data = await writeContract(config);
+    console.log(data.hash);
+
+    const txResult = await waitForTransaction({
+      hash: data?.hash,
+    });
+    console.log(txResult, "transaction result for verification");
+    setShowDetail(true);
+  };
+
   return (
     <>
       {showDetail ? (
@@ -28,7 +77,7 @@ const Otp = () => {
                   loading={loading}
                 />
                 <button
-                  onClick={() => setShowDetail(true)}
+                  onClick={() => verifyRecord()}
                   className="complete-btn mt-7"
                 >
                   Verify OTP

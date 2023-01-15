@@ -1,13 +1,16 @@
 import { useState } from "react";
-import { useMoralis } from "react-moralis";
 import Web3 from "web3";
 import Header from "./header";
 import { BnbIcon } from "../public/icon";
 import { useRouter } from "next/router";
-
-const web3 = new Web3(
-  "https://data-seed-prebsc-1-s1.binance.org:8545/" || "ws://localhost:8545"
-);
+import { useAccount, useDisconnect } from "wagmi";
+import { registryAddress, registryAbi, resolverAbi } from "../constants";
+import {
+  prepareWriteContract,
+  waitForTransaction,
+  writeContract,
+} from "@wagmi/core";
+import { keccak256 } from "../utils";
 
 const item = [
   {
@@ -25,17 +28,40 @@ const item = [
 export default function Detail({ currentIndex }: { currentIndex?: number }) {
   const router = useRouter();
 
-  const { enableWeb3, isWeb3Enabled, account, deactivateWeb3 } = useMoralis();
+  const phoneNumber = localStorage.getItem("phoneNumber");
+  const phoneHash = keccak256(phoneNumber);
+  const { isConnected, address } = useAccount();
+  const { disconnect } = useDisconnect();
+
   const [loading, setLoading] = useState(false);
 
   const handleDisconnect = () => {
-    deactivateWeb3();
+    localStorage.removeItem("phoneNumber");
+
+    disconnect();
+  };
+
+  const createRecord = async () => {
+    const config = await prepareWriteContract({
+      address: registryAddress,
+      abi: registryAbi.abi,
+      functionName: "setPhoneRecord",
+      args: [phoneHash, address, "BSC Testnet"],
+    });
+    const data = await writeContract(config);
+    console.log(data.hash);
+
+    const txResult = await waitForTransaction({
+      hash: data?.hash,
+    });
+    console.log(txResult, "transaction result for record creation");
   };
   const handleNext = () => {
     setLoading(true);
     setTimeout(() => {
       setLoading(false);
       if (currentIndex === 1) {
+        createRecord();
         router.push("/profile");
       } else {
         router.push("/otp");
@@ -45,15 +71,15 @@ export default function Detail({ currentIndex }: { currentIndex?: number }) {
   return (
     <div className="bg">
       <Header />
-      {isWeb3Enabled && (
+      {isConnected && (
         <div className="absolute bottom-10 left-10">
           <div className="flex flex-col items-center justify-center">
             <div className="flex items-center gap-2">
               <div className="active" />
-              <div className="text-white font-bold text-sm">{`${account?.slice(
+              <div className="text-white font-bold text-sm">{`${address?.slice(
                 0,
-                6
-              )}...${account?.slice(account?.length - 4)}`}</div>
+                6,
+              )}...${address?.slice(address?.length - 4)}`}</div>
             </div>
             <button onClick={handleDisconnect} className="disconnect mt-3">
               Disconnect
@@ -64,7 +90,7 @@ export default function Detail({ currentIndex }: { currentIndex?: number }) {
       <div className="flex relative justify-end mt-10 xl:px-16 px-5">
         <div className="detail-bg py-10 px-20">
           <div className="flex justify-between">
-            <div className="green">+971 54 754 6254</div>
+            <div className="green">{phoneNumber}</div>
             <div className="detail-box py-5 px-7">
               <div className="flex items-center justify-between">
                 <div className="fees">Fees</div>

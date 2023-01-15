@@ -1,4 +1,4 @@
-import { useMoralis } from "react-moralis";
+import { useAccount, useDisconnect } from "wagmi";
 import Web3 from "web3";
 import Header from "../components/header";
 import {
@@ -12,43 +12,45 @@ import {
 } from "../public/icon";
 
 const web3 = new Web3(
-  "https://data-seed-prebsc-1-s1.binance.org:8545/" || "ws://localhost:8545"
+  "https://data-seed-prebsc-1-s1.binance.org:8545/" || "ws://localhost:8545",
 );
 
-const items = [
-  {
-    title: "ETH",
-    address: "0x0118962d11c1E5E4848D5B73DAC3d04d6f97fe5A",
-    icon: <EthIcon />,
-  },
-  {
-    title: "BTC",
-    address: "",
-    icon: <BtcIcon />,
-  },
-  {
-    title: "SOL",
-    address: "",
-    icon: <SolIcon />,
-  },
-];
-
 export default function Profile({ currentIndex }: { currentIndex: number }) {
-  const { isWeb3Enabled, account, deactivateWeb3 } = useMoralis();
+  const { isConnected, address } = useAccount();
+  const { disconnect } = useDisconnect();
+  const phoneNumber = localStorage.getItem("phoneNumber");
 
   const handleDisconnect = () => {
-    deactivateWeb3();
+    disconnect();
   };
+
+  const items = [
+    {
+      title: "ETH",
+      address: address,
+      icon: <EthIcon />,
+    },
+    {
+      title: "BTC",
+      address: "",
+      icon: <BtcIcon />,
+    },
+    {
+      title: "SOL",
+      address: "",
+      icon: <SolIcon />,
+    },
+  ];
   return (
     <div className="bg">
       <Header />
-      {isWeb3Enabled && (
+      {isConnected && (
         <div className="absolute bottom-10 left-10">
           <div className="flex flex-col items-center justify-center">
-            <div className="text-white font-bold text-sm">{`${account?.slice(
+            <div className="text-white font-bold text-sm">{`${address?.slice(
               0,
-              6
-            )}...${account?.slice(account?.length - 4)}`}</div>
+              6,
+            )}...${address?.slice(address?.length - 4)}`}</div>
             <button onClick={handleDisconnect} className="disconnect mt-3">
               Disconnect
             </button>
@@ -58,7 +60,7 @@ export default function Profile({ currentIndex }: { currentIndex: number }) {
       <div className="flex relative justify-end mt-10 xl:px-16 px-5">
         <div className="detail-bg">
           <div className="py-7 px-24 border-bottom pink font-bold text-2xl">
-            +971 54 754 6254
+            {phoneNumber}
           </div>
           <div className="py-14 px-24 border-bottom pink font-bold text-2xl">
             <div className="flex items-center gap-8">
@@ -76,9 +78,7 @@ export default function Profile({ currentIndex }: { currentIndex: number }) {
               </div>
               <div>
                 <div className="flex items-center gap-6 cursor-pointer">
-                  <div className="pink text-lg font-medium">
-                    0x0118962d11c1E5E4848D5B73DAC3d04d6f97fe5A
-                  </div>
+                  <div className="pink text-lg font-medium">{address}</div>
                   <ArrowIcon />
                 </div>
                 <div className="text-lg font-medium yellow mt-3">

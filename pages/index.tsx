@@ -1,19 +1,16 @@
 import { useEffect, useState } from "react";
-import { useMoralis, useWeb3Contract } from "react-moralis";
-import { contractAddresses, registryAbi, resolverAbi } from "../constants";
+import { registryAddress, registryAbi, resolverAbi } from "../constants";
+import { useAccount } from "wagmi";
+import { readContract } from "@wagmi/core";
 import { useNotification } from "web3uikit";
 import { keccak256 } from "../utils";
 import Web3 from "web3";
-import { ethers } from "ethers";
+import ethers from "ethers";
 import Header from "../components/header";
 import Detail from "../components/detail";
-import { contract } from "./_app";
-const web3 = new Web3(
-  "https://data-seed-prebsc-1-s1.binance.org:8545/" || "ws://localhost:8545"
-);
 
 export default function Home() {
-  const { enableWeb3, isWeb3Enabled, account } = useMoralis();
+  const { isConnected, address } = useAccount();
   const dispatch = useNotification();
 
   const [showDetail, setShowDetail] = useState(false);
@@ -32,23 +29,29 @@ export default function Home() {
   const phoneHash = keccak256(phone);
 
   const handleNext = async () => {
-    if (!isWeb3Enabled) {
+    if (!isConnected) {
       handleNewNotification("info", "Please connect metamask!", "Notification");
     } else {
       setLoading(true);
-      const result = await contract.methods.recordExists(phoneHash).call();
-      if (!result) {
+      const data = await readContract({
+        address: registryAddress,
+        abi: registryAbi.abi,
+        functionName: "recordExists",
+        args: [phoneHash],
+      });
+      if (!data) {
         handleNewNotification(
           "success",
           "Phone number available!",
-          "Notification"
+          "Notification",
         );
+        localStorage.setItem("phoneNumber", phone);
         setShowDetail(true);
       } else {
         handleNewNotification(
           "info",
           "Phone number already taken!",
-          "Notification"
+          "Notification",
         );
       }
       setLoading(false);
@@ -68,7 +71,8 @@ export default function Home() {
               </div>
               <div className="flex mt-10 w-full">
                 <input
-                  onClick={(e: any) => setPhone(e.target.value)}
+                  onChange={(e: any) => setPhone(e.target.value)}
+                  value={phone}
                   className="search px-10"
                   placeholder="Enter phone number"
                 />
