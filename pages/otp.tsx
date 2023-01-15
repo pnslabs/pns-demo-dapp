@@ -29,7 +29,7 @@ const Otp = () => {
   const hashedMessage = ethers.utils.keccak256(message);
   console.log(hashedMessage, "here");
 
-  const verifyAndCreateRecord = async () => {
+  const verifyRecord = async () => {
     const signature = await signMessage({ message: hashedMessage });
 
     const config = await prepareWriteContract({

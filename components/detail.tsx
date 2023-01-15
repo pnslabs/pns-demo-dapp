@@ -4,6 +4,13 @@ import Header from "./header";
 import { BnbIcon } from "../public/icon";
 import { useRouter } from "next/router";
 import { useAccount, useDisconnect } from "wagmi";
+import { registryAddress, registryAbi, resolverAbi } from "../constants";
+import {
+  prepareWriteContract,
+  waitForTransaction,
+  writeContract,
+} from "@wagmi/core";
+import { keccak256 } from "../utils";
 
 const item = [
   {
@@ -22,6 +29,7 @@ export default function Detail({ currentIndex }: { currentIndex?: number }) {
   const router = useRouter();
 
   const phoneNumber = localStorage.getItem("phoneNumber");
+  const phoneHash = keccak256(phoneNumber);
   const { isConnected, address } = useAccount();
   const { disconnect } = useDisconnect();
 
@@ -33,12 +41,27 @@ export default function Detail({ currentIndex }: { currentIndex?: number }) {
     disconnect();
   };
 
-  const createRecord = () => {};
+  const createRecord = async () => {
+    const config = await prepareWriteContract({
+      address: registryAddress,
+      abi: registryAbi.abi,
+      functionName: "setPhoneRecord",
+      args: [phoneHash, address, "BSC Testnet"],
+    });
+    const data = await writeContract(config);
+    console.log(data.hash);
+
+    const txResult = await waitForTransaction({
+      hash: data?.hash,
+    });
+    console.log(txResult, "transaction result for record creation");
+  };
   const handleNext = () => {
     setLoading(true);
     setTimeout(() => {
       setLoading(false);
       if (currentIndex === 1) {
+        createRecord();
         router.push("/profile");
       } else {
         router.push("/otp");
