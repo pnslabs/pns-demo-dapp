@@ -42,6 +42,7 @@ export default function Detail({ currentIndex }: { currentIndex?: number }) {
   };
 
   const createRecord = async () => {
+    setLoading(true);
     const config = await prepareWriteContract({
       address: registryAddress,
       abi: registryAbi.abi,
@@ -54,19 +55,16 @@ export default function Detail({ currentIndex }: { currentIndex?: number }) {
     const txResult = await waitForTransaction({
       hash: data?.hash,
     });
+    router.push("/profile");
     console.log(txResult, "transaction result for record creation");
+    setLoading(false);
   };
   const handleNext = () => {
-    setLoading(true);
-    setTimeout(() => {
-      setLoading(false);
-      if (currentIndex === 1) {
-        createRecord();
-        router.push("/profile");
-      } else {
-        router.push("/otp");
-      }
-    }, 2000);
+    if (currentIndex === 1) {
+      createRecord();
+    } else {
+      router.push("/otp");
+    }
   };
   return (
     <div className="bg">
@@ -78,7 +76,7 @@ export default function Detail({ currentIndex }: { currentIndex?: number }) {
               <div className="active" />
               <div className="text-white font-bold text-sm">{`${address?.slice(
                 0,
-                6,
+                6
               )}...${address?.slice(address?.length - 4)}`}</div>
             </div>
             <button onClick={handleDisconnect} className="disconnect mt-3">

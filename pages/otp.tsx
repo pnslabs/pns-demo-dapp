@@ -18,8 +18,11 @@ import {
 } from "../constants";
 import { ethers } from "ethers";
 import { keccak256 } from "../utils";
+import { useNotification } from "web3uikit";
 
 const Otp = () => {
+  const dispatch = useNotification();
+
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [otp, setOtp] = useState("1234");
@@ -28,33 +31,60 @@ const Otp = () => {
   const phoneNumber = localStorage.getItem("phoneNumber");
   const phoneHash = keccak256(phoneNumber);
 
+  const handleNewNotification = (type: any, message: string, title: string) => {
+    dispatch({
+      type,
+      message,
+      title,
+      position: "topL",
+    });
+  };
+
   const message = ethers.utils.solidityPack(
     ["bytes32", "uint256"],
-    [phoneHash, otp],
+    [phoneHash, otp]
   );
 
   const hashedMessage = ethers.utils.keccak256(message);
   console.log(hashedMessage, "here");
 
   const verifyRecord = async () => {
-    const signer = await fetchSigner();
-    console.log(signer, "signer");
-    const signature = await signMessage({ message: hashedMessage });
-    console.log(signature, "signature");
-    const config = await prepareWriteContract({
-      address: registryAddress,
-      abi: registryAbi.abi,
-      functionName: "verifyPhone",
-      args: [phoneHash, hashedMessage, true, signature],
-    });
-    const data = await writeContract(config);
-    console.log(data.hash);
+    try {
+      setLoading(true);
+      const signer = await fetchSigner();
+      console.log(signer, "signer");
+      const signature = await signMessage({ message: hashedMessage });
+      console.log(signature, "signature");
+      const config = await prepareWriteContract({
+        address: registryAddress,
+        abi: registryAbi.abi,
+        functionName: "verifyPhone",
+        args: [phoneHash, hashedMessage, true, signature],
+      });
+      const data = await writeContract(config);
+      console.log(data.hash);
 
-    const txResult = await waitForTransaction({
-      hash: data?.hash,
-    });
-    console.log(txResult, "transaction result for verification");
-    setShowDetail(true);
+      const txResult = await waitForTransaction({
+        hash: data?.hash,
+      });
+      if (txResult) {
+        handleNewNotification(
+          "success",
+          "Phone number verified successfully!",
+          "Notification"
+        );
+      }
+      console.log(txResult, "transaction result for verification");
+      setShowDetail(true);
+      setLoading(false);
+    } catch (e: any) {
+      handleNewNotification(
+        "error",
+        "An error occured while verifying phone number!",
+        "Notification"
+      );
+      setLoading(false);
+    }
   };
 
   return (
@@ -79,8 +109,15 @@ const Otp = () => {
                 <button
                   onClick={() => verifyRecord()}
                   className="complete-btn mt-7"
+                  disabled={loading}
                 >
-                  Verify OTP
+                  {loading ? (
+                    <div className="flex items-center justify-center my-2">
+                      <div className="animate-spin">C</div>
+                    </div>
+                  ) : (
+                    <div>Verify OTP</div>
+                  )}
                 </button>
               </div>
             </div>

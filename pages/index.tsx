@@ -29,6 +29,7 @@ export default function Home() {
   const phoneHash = keccak256(phone);
 
   const handleNext = async () => {
+    console.log(phoneHash);
     if (!isConnected) {
       handleNewNotification("info", "Please connect metamask!", "Notification");
     } else {
@@ -43,7 +44,7 @@ export default function Home() {
         handleNewNotification(
           "success",
           "Phone number available!",
-          "Notification",
+          "Notification"
         );
         localStorage.setItem("phoneNumber", phone);
         setShowDetail(true);
@@ -51,7 +52,7 @@ export default function Home() {
         handleNewNotification(
           "info",
           "Phone number already taken!",
-          "Notification",
+          "Notification"
         );
       }
       setLoading(false);
