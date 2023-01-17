@@ -49,42 +49,32 @@ const Otp = () => {
   console.log(hashedMessage, "here");
 
   const verifyRecord = async () => {
-    try {
-      setLoading(true);
-      const signer = await fetchSigner();
-      console.log(signer, "signer");
-      const signature = await signMessage({ message: hashedMessage });
-      console.log(signature, "signature");
-      const config = await prepareWriteContract({
-        address: registryAddress,
-        abi: registryAbi.abi,
-        functionName: "verifyPhone",
-        args: [phoneHash, hashedMessage, true, signature],
-      });
-      const data = await writeContract(config);
-      console.log(data.hash);
+    const signer = await fetchSigner();
+    const signature = await signer.signMessage(
+      ethers.utils.arrayify(hashedMessage),
+    );
+    console.log(signature, "signature");
+    const config = await prepareWriteContract({
+      address: registryAddress,
+      abi: registryAbi.abi,
+      functionName: "verifyPhone",
+      args: [phoneHash, hashedMessage, true, signature],
+    });
+    const data = await writeContract(config);
+    console.log(data.hash);
 
-      const txResult = await waitForTransaction({
-        hash: data?.hash,
-      });
-      if (txResult) {
-        handleNewNotification(
-          "success",
-          "Phone number verified successfully!",
-          "Notification"
-        );
-      }
-      console.log(txResult, "transaction result for verification");
-      setShowDetail(true);
-      setLoading(false);
-    } catch (e: any) {
-      handleNewNotification(
-        "error",
-        "An error occured while verifying phone number!",
-        "Notification"
-      );
-      setLoading(false);
-    }
+    const txResult = await waitForTransaction({
+      hash: data?.hash,
+    });
+    console.log(txResult, "transaction result for verification");
+    const verificationRecordData = await readContract({
+      address: registryAddress,
+      abi: registryAbi.abi,
+      functionName: "getVerificationRecord",
+      args: [phoneHash],
+    });
+    console.log(verificationRecordData, "verification record data");
+    setShowDetail(true);
   };
 
   return (
