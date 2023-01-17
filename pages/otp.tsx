@@ -38,8 +38,9 @@ const Otp = () => {
 
   const verifyRecord = async () => {
     const signer = await fetchSigner();
-    console.log(signer, "signer");
-    const signature = await signMessage({ message: hashedMessage });
+    const signature = await signer.signMessage(
+      ethers.utils.arrayify(hashedMessage),
+    );
     console.log(signature, "signature");
     const config = await prepareWriteContract({
       address: registryAddress,
@@ -54,6 +55,13 @@ const Otp = () => {
       hash: data?.hash,
     });
     console.log(txResult, "transaction result for verification");
+    const verificationRecordData = await readContract({
+      address: registryAddress,
+      abi: registryAbi.abi,
+      functionName: "getVerificationRecord",
+      args: [phoneHash],
+    });
+    console.log(verificationRecordData, "verification record data");
     setShowDetail(true);
   };
 
