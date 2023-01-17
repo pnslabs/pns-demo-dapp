@@ -70,7 +70,7 @@ export default function Profile({ currentIndex }: { currentIndex: number }) {
   };
 
   const getResolvers = async () => {
-    if (data?.phoneHash) {
+    if (data?.phoneHash && resolver?.length === 0 && isConnected) {
       const info = await readContract({
         address: registryAddress,
         abi: registryAbi.abi,

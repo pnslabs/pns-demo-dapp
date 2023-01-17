@@ -6,10 +6,12 @@ import { useNotification } from "web3uikit";
 import { keccak256 } from "../utils";
 import Header from "../components/header";
 import Detail from "../components/detail";
+import { useRouter } from "next/router";
 
 export default function Home() {
-  const { isConnected } = useAccount();
+  const { isConnected, address } = useAccount();
   const dispatch = useNotification();
+  const router = useRouter();
 
   const [showDetail, setShowDetail] = useState(false);
   const [phone, setPhone] = useState("");
@@ -31,26 +33,31 @@ export default function Home() {
       handleNewNotification("info", "Please connect metamask!", "Notification");
     } else {
       setLoading(true);
-      const data = await readContract({
+      const info = await readContract({
         address: registryAddress,
         abi: registryAbi.abi,
-        functionName: "recordExists",
+        functionName: "getRecord",
         args: [phoneHash],
       });
-      if (!data) {
+      console.log(info);
+      localStorage.setItem("phoneNumber", phone);
+      if (!info?.exists) {
         handleNewNotification(
           "success",
           "Phone number available!",
           "Notification"
         );
-        localStorage.setItem("phoneNumber", phone);
         setShowDetail(true);
       } else {
-        handleNewNotification(
-          "info",
-          "Phone number already taken!",
-          "Notification"
-        );
+        if (address === info?.owner) {
+          router.push("/profile");
+        } else {
+          handleNewNotification(
+            "info",
+            "Phone number already taken!",
+            "Notification"
+          );
+        }
       }
       setLoading(false);
     }

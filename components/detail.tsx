@@ -1,10 +1,9 @@
 import { useState } from "react";
-import Web3 from "web3";
 import Header from "./header";
 import { BnbIcon } from "../public/icon";
 import { useRouter } from "next/router";
 import { useAccount, useDisconnect } from "wagmi";
-import { registryAddress, registryAbi, resolverAbi } from "../constants";
+import { registryAddress, registryAbi } from "../constants";
 import {
   prepareWriteContract,
   waitForTransaction,
