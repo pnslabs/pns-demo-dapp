@@ -5,7 +5,7 @@ import { registryAbi, resolverAbi } from "../constants";
 import Web3 from "web3";
 import { MetaMaskConnector } from "wagmi/connectors/metaMask";
 import { configureChains, createClient, WagmiConfig } from "wagmi";
-import { bscTestnet } from "wagmi/chains";
+import { bscTestnet, localhost } from "wagmi/chains";
 import { jsonRpcProvider } from "wagmi/providers/jsonRpc";
 
 export const projectId = process.env.NEXT_PUBLIC_PROJECT_ID;
@@ -17,9 +17,10 @@ const { chains, provider } = configureChains(
     jsonRpcProvider({
       rpc: () => ({
         http: "https://data-seed-prebsc-1-s1.binance.org:8545/",
+        // http: "http://127.0.0.1:8545",
       }),
     }),
-  ],
+  ]
 );
 const wagmiClient = createClient({
   provider,

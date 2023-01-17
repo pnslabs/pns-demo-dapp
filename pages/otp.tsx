@@ -18,8 +18,11 @@ import {
 } from "../constants";
 import { ethers } from "ethers";
 import { keccak256 } from "../utils";
+import { useNotification } from "web3uikit";
 
 const Otp = () => {
+  const dispatch = useNotification();
+
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [otp, setOtp] = useState("1234");
@@ -28,9 +31,18 @@ const Otp = () => {
   const phoneNumber = localStorage.getItem("phoneNumber");
   const phoneHash = keccak256(phoneNumber);
 
+  const handleNewNotification = (type: any, message: string, title: string) => {
+    dispatch({
+      type,
+      message,
+      title,
+      position: "topL",
+    });
+  };
+
   const message = ethers.utils.solidityPack(
     ["bytes32", "uint256"],
-    [phoneHash, otp],
+    [phoneHash, otp]
   );
 
   const hashedMessage = ethers.utils.keccak256(message);
@@ -87,8 +99,15 @@ const Otp = () => {
                 <button
                   onClick={() => verifyRecord()}
                   className="complete-btn mt-7"
+                  disabled={loading}
                 >
-                  Verify OTP
+                  {loading ? (
+                    <div className="flex items-center justify-center my-2">
+                      <div className="animate-spin">C</div>
+                    </div>
+                  ) : (
+                    <div>Verify OTP</div>
+                  )}
                 </button>
               </div>
             </div>
