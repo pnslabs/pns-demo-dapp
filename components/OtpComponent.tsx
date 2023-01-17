@@ -1,4 +1,3 @@
-import { useState } from "react";
 import OtpInput from "react-otp-input";
 import styled from "styled-components";
 

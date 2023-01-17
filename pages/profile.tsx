@@ -11,10 +11,6 @@ import {
   SolIcon,
 } from "../public/icon";
 
-const web3 = new Web3(
-  "https://data-seed-prebsc-1-s1.binance.org:8545/" || "ws://localhost:8545",
-);
-
 export default function Profile({ currentIndex }: { currentIndex: number }) {
   const { isConnected, address } = useAccount();
   const { disconnect } = useDisconnect();
@@ -49,7 +45,7 @@ export default function Profile({ currentIndex }: { currentIndex: number }) {
           <div className="flex flex-col items-center justify-center">
             <div className="text-white font-bold text-sm">{`${address?.slice(
               0,
-              6,
+              6
             )}...${address?.slice(address?.length - 4)}`}</div>
             <button onClick={handleDisconnect} className="disconnect mt-3">
               Disconnect

@@ -11,6 +11,7 @@ import {
   writeContract,
 } from "@wagmi/core";
 import { keccak256 } from "../utils";
+import { useNotification } from "web3uikit";
 
 const item = [
   {
@@ -27,6 +28,7 @@ const item = [
 
 export default function Detail({ currentIndex }: { currentIndex?: number }) {
   const router = useRouter();
+  const dispatch = useNotification();
 
   const phoneNumber = localStorage.getItem("phoneNumber");
   const phoneHash = keccak256(phoneNumber);
@@ -37,27 +39,44 @@ export default function Detail({ currentIndex }: { currentIndex?: number }) {
 
   const handleDisconnect = () => {
     localStorage.removeItem("phoneNumber");
-
     disconnect();
   };
 
-  const createRecord = async () => {
-    setLoading(true);
-    const config = await prepareWriteContract({
-      address: registryAddress,
-      abi: registryAbi.abi,
-      functionName: "setPhoneRecord",
-      args: [phoneHash, address, "BSC Testnet"],
+  const handleNewNotification = (type: any, message: string, title: string) => {
+    dispatch({
+      type,
+      message,
+      title,
+      position: "topL",
     });
-    const data = await writeContract(config);
-    console.log(data.hash);
+  };
 
-    const txResult = await waitForTransaction({
-      hash: data?.hash,
-    });
-    router.push("/profile");
-    console.log(txResult, "transaction result for record creation");
-    setLoading(false);
+  const createRecord = async () => {
+    try {
+      setLoading(true);
+      const config = await prepareWriteContract({
+        address: registryAddress,
+        abi: registryAbi.abi,
+        functionName: "setPhoneRecord",
+        args: [phoneHash, address, "BSC Testnet"],
+      });
+      const data = await writeContract(config);
+      console.log(data.hash);
+
+      await waitForTransaction({
+        hash: data?.hash,
+      });
+      router.push("/profile");
+      handleNewNotification("success", "Phone record created!", "Notification");
+    } catch (error) {
+      handleNewNotification(
+        "error",
+        "An error occurred! Please try again later",
+        "Notification"
+      );
+    } finally {
+      setLoading(false);
+    }
   };
   const handleNext = () => {
     if (currentIndex === 1) {

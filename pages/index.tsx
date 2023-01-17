@@ -1,16 +1,14 @@
-import { useEffect, useState } from "react";
-import { registryAddress, registryAbi, resolverAbi } from "../constants";
+import { useState } from "react";
+import { registryAddress, registryAbi } from "../constants";
 import { useAccount } from "wagmi";
 import { readContract } from "@wagmi/core";
 import { useNotification } from "web3uikit";
 import { keccak256 } from "../utils";
-import Web3 from "web3";
-import ethers from "ethers";
 import Header from "../components/header";
 import Detail from "../components/detail";
 
 export default function Home() {
-  const { isConnected, address } = useAccount();
+  const { isConnected } = useAccount();
   const dispatch = useNotification();
 
   const [showDetail, setShowDetail] = useState(false);
@@ -29,7 +27,6 @@ export default function Home() {
   const phoneHash = keccak256(phone);
 
   const handleNext = async () => {
-    console.log(phoneHash);
     if (!isConnected) {
       handleNewNotification("info", "Please connect metamask!", "Notification");
     } else {

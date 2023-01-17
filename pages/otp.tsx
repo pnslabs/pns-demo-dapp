@@ -6,16 +6,9 @@ import {
   prepareWriteContract,
   waitForTransaction,
   writeContract,
-  readContract,
-  signMessage,
   fetchSigner,
 } from "@wagmi/core";
-import {
-  registryAddress,
-  resolverAddress,
-  registryAbi,
-  resolverAbi,
-} from "../constants";
+import { registryAddress, registryAbi } from "../constants";
 import { ethers } from "ethers";
 import { keccak256 } from "../utils";
 import { useNotification } from "web3uikit";
@@ -40,41 +33,50 @@ const Otp = () => {
     });
   };
 
-  const message = ethers.utils.solidityPack(
-    ["bytes32", "uint256"],
-    [phoneHash, otp]
-  );
-
-  const hashedMessage = ethers.utils.keccak256(message);
-  console.log(hashedMessage, "here");
-
   const verifyRecord = async () => {
-    const signer = await fetchSigner();
-    const signature = await signer.signMessage(
-      ethers.utils.arrayify(hashedMessage),
-    );
-    console.log(signature, "signature");
-    const config = await prepareWriteContract({
-      address: registryAddress,
-      abi: registryAbi.abi,
-      functionName: "verifyPhone",
-      args: [phoneHash, hashedMessage, true, signature],
-    });
-    const data = await writeContract(config);
-    console.log(data.hash);
+    try {
+      const message = ethers.utils.solidityPack(
+        ["bytes32", "uint256"],
+        [phoneHash, otp]
+      );
 
-    const txResult = await waitForTransaction({
-      hash: data?.hash,
-    });
-    console.log(txResult, "transaction result for verification");
-    const verificationRecordData = await readContract({
-      address: registryAddress,
-      abi: registryAbi.abi,
-      functionName: "getVerificationRecord",
-      args: [phoneHash],
-    });
-    console.log(verificationRecordData, "verification record data");
-    setShowDetail(true);
+      const hashedMessage = ethers.utils.keccak256(message);
+
+      setLoading(true);
+      const signer = await fetchSigner();
+      const signature = await signer!.signMessage(
+        ethers.utils.arrayify(hashedMessage)
+      );
+
+      const config = await prepareWriteContract({
+        address: registryAddress,
+        abi: registryAbi.abi,
+        functionName: "verifyPhone",
+        args: [phoneHash, hashedMessage, true, signature],
+      });
+
+      const data = await writeContract(config);
+
+      await waitForTransaction({
+        hash: data?.hash,
+      });
+
+      handleNewNotification(
+        "success",
+        "Phone number verified successfully!",
+        "Notification"
+      );
+
+      setShowDetail(true);
+    } catch (error) {
+      handleNewNotification(
+        "error",
+        "An error occurred. Please try again!",
+        "Notification"
+      );
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
