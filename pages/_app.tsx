@@ -16,11 +16,11 @@ const { chains, provider } = configureChains(
   [
     jsonRpcProvider({
       rpc: () => ({
-        http: "https://data-seed-prebsc-1-s1.binance.org:8545/",
+        http: "https://data-seed-prebsc-2-s3.binance.org:8545/",
         // http: "http://127.0.0.1:8545",
       }),
     }),
-  ]
+  ],
 );
 const wagmiClient = createClient({
   provider,

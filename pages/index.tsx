@@ -29,35 +29,47 @@ export default function Home() {
   const phoneHash = keccak256(phone);
 
   const handleNext = async () => {
-    if (!isConnected) {
-      handleNewNotification("info", "Please connect metamask!", "Notification");
-    } else {
-      setLoading(true);
-      const info = await readContract({
-        address: registryAddress,
-        abi: registryAbi.abi,
-        functionName: "getRecord",
-        args: [phoneHash],
-      });
-      console.log(info);
-      localStorage.setItem("phoneNumber", phone);
-      if (!info?.exists) {
+    try {
+      if (!isConnected) {
         handleNewNotification(
-          "success",
-          "Phone number available!",
-          "Notification"
+          "info",
+          "Please connect metamask!",
+          "Notification",
         );
-        setShowDetail(true);
       } else {
-        if (address === info?.owner) {
-          router.push("/profile");
-        } else {
+        setLoading(true);
+        const info = await readContract({
+          address: registryAddress,
+          abi: registryAbi.abi,
+          functionName: "getRecord",
+          args: [phoneHash],
+        });
+        console.log(info);
+        localStorage.setItem("phoneNumber", phone);
+        if (!info?.exists) {
           handleNewNotification(
-            "info",
-            "Phone number already taken!",
-            "Notification"
+            "success",
+            "Phone number available!",
+            "Notification",
           );
+          setShowDetail(true);
+        } else {
+          if (address === info?.owner) {
+            router.push("/profile");
+          } else {
+            handleNewNotification(
+              "info",
+              "Phone number already taken!",
+              "Notification",
+            );
+          }
         }
+        setLoading(false);
+      }
+    } catch (e) {
+      console.log(e?.errorArgs);
+      if (e?.errorArgs[0] === "phone record not found") {
+        setShowDetail(true);
       }
       setLoading(false);
     }
