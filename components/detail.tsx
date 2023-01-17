@@ -58,7 +58,7 @@ export default function Detail({ currentIndex }: { currentIndex?: number }) {
         address: registryAddress,
         abi: registryAbi.abi,
         functionName: "setPhoneRecord",
-        args: [phoneHash, address, "BSC Testnet"],
+        args: [phoneHash, address, "ETH"],
       });
       const data = await writeContract(config);
       console.log(data.hash);
