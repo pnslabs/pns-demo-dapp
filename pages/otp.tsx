@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Detail from "../components/detail";
 import Header from "../components/header";
 import OtpComponent from "../components/OtpComponent";
@@ -20,8 +20,8 @@ const Otp = () => {
   const [error, setError] = useState("");
   const [otp, setOtp] = useState("1234");
   const [showDetail, setShowDetail] = useState(false);
+  const [phoneNumber, setPhoneNumber] = useState<string>("");
 
-  const phoneNumber = localStorage.getItem("phoneNumber");
   const phoneHash = keccak256(phoneNumber);
 
   const handleNewNotification = (type: any, message: string, title: string) => {
@@ -78,6 +78,13 @@ const Otp = () => {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const phone = localStorage.getItem("phoneNumber");
+      setPhoneNumber(phone || "");
+    }
+  }, []);
 
   return (
     <>
