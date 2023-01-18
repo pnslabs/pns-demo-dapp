@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import Detail from "../components/detail";
 import Header from "../components/header";
 import OtpComponent from "../components/OtpComponent";
@@ -7,20 +7,22 @@ import {
   waitForTransaction,
   writeContract,
   fetchSigner,
+  readContract,
 } from "@wagmi/core";
 import { registryAddress, registryAbi } from "../constants";
 import { ethers } from "ethers";
 import { keccak256 } from "../utils";
 import { useNotification } from "web3uikit";
+import { PhoneNumberContext } from "../context";
 
 const Otp = () => {
   const dispatch = useNotification();
+  const { phone: phoneNumber } = useContext(PhoneNumberContext);
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [otp, setOtp] = useState("1234");
   const [showDetail, setShowDetail] = useState(false);
-  const [phoneNumber, setPhoneNumber] = useState<string>("");
 
   const phoneHash = keccak256(phoneNumber);
 
@@ -66,9 +68,11 @@ const Otp = () => {
         "Phone number verified successfully!",
         "Notification"
       );
+      setLoading(false);
 
       setShowDetail(true);
     } catch (error) {
+      console.log(error);
       handleNewNotification(
         "error",
         "An error occurred. Please try again!",
@@ -78,13 +82,6 @@ const Otp = () => {
       setLoading(false);
     }
   };
-
-  useEffect(() => {
-    if (typeof window !== "undefined") {
-      const phone = localStorage.getItem("phoneNumber");
-      setPhoneNumber(phone || "");
-    }
-  }, []);
 
   return (
     <>

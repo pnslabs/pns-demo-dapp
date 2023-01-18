@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useContext, useState } from "react";
 import Header from "./header";
 import { BnbIcon } from "../public/icon";
 import { useRouter } from "next/router";
@@ -11,6 +11,7 @@ import {
 } from "@wagmi/core";
 import { keccak256 } from "../utils";
 import { useNotification } from "web3uikit";
+import { PhoneNumberContext } from "../context";
 
 const item = [
   {
@@ -28,8 +29,8 @@ const item = [
 export default function Detail({ currentIndex }: { currentIndex?: number }) {
   const router = useRouter();
   const dispatch = useNotification();
+  const { phone: phoneNumber } = useContext(PhoneNumberContext);
 
-  const phoneNumber = localStorage.getItem("phoneNumber");
   const phoneHash = keccak256(phoneNumber);
   const { isConnected, address } = useAccount();
   const { disconnect } = useDisconnect();
@@ -37,7 +38,6 @@ export default function Detail({ currentIndex }: { currentIndex?: number }) {
   const [loading, setLoading] = useState(false);
 
   const handleDisconnect = () => {
-    localStorage.removeItem("phoneNumber");
     disconnect();
   };
 
@@ -53,6 +53,7 @@ export default function Detail({ currentIndex }: { currentIndex?: number }) {
   const createRecord = async () => {
     try {
       setLoading(true);
+
       const config = await prepareWriteContract({
         address: registryAddress,
         abi: registryAbi.abi,
@@ -60,7 +61,6 @@ export default function Detail({ currentIndex }: { currentIndex?: number }) {
         args: [phoneHash, address, "ETH"],
       });
       const data = await writeContract(config);
-      console.log(data.hash);
 
       await waitForTransaction({
         hash: data?.hash,

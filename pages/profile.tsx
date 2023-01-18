@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { useAccount, useDisconnect } from "wagmi";
 import {
   readContract,
@@ -19,12 +19,14 @@ import {
 } from "../public/icon";
 import { keccak256 } from "../utils";
 import { useNotification } from "web3uikit";
+import { PhoneNumberContext } from "../context";
 
 export default function Profile({ currentIndex }: { currentIndex: number }) {
   const { isConnected, address } = useAccount();
   const { disconnect } = useDisconnect();
+  const { phone: phoneNumber } = useContext(PhoneNumberContext);
+
   const [data, setData] = useState<any>({});
-  const [phoneNumber, setPhoneNumber] = useState<string>("");
   const [resolver, setResolver] = useState<any>([]);
 
   const phoneHash = keccak256(phoneNumber);
@@ -88,13 +90,6 @@ export default function Profile({ currentIndex }: { currentIndex: number }) {
   useEffect(() => {
     getResolvers();
   }, [data]);
-
-  useEffect(() => {
-    if (typeof window !== "undefined") {
-      const phone = localStorage.getItem("phoneNumber");
-      setPhoneNumber(phone || "");
-    }
-  }, []);
 
   return (
     <div className="bg">

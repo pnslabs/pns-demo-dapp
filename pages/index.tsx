@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useContext, useState } from "react";
 import { registryAddress, registryAbi } from "../constants";
 import { useAccount } from "wagmi";
 import { readContract } from "@wagmi/core";
@@ -7,14 +7,15 @@ import { keccak256 } from "../utils";
 import Header from "../components/header";
 import Detail from "../components/detail";
 import { useRouter } from "next/router";
+import { PhoneNumberContext } from "../context";
 
 export default function Home() {
   const { isConnected, address } = useAccount();
   const dispatch = useNotification();
   const router = useRouter();
+  const { phone, setPhone } = useContext(PhoneNumberContext);
 
   const [showDetail, setShowDetail] = useState(false);
-  const [phone, setPhone] = useState("");
   const [loading, setLoading] = useState(false);
 
   const handleNewNotification = (type: any, message: string, title: string) => {
@@ -34,7 +35,7 @@ export default function Home() {
         handleNewNotification(
           "info",
           "Please connect metamask!",
-          "Notification",
+          "Notification"
         );
       } else {
         setLoading(true);
@@ -45,12 +46,11 @@ export default function Home() {
           args: [phoneHash],
         });
         console.log(info);
-        localStorage.setItem("phoneNumber", phone);
         if (!info?.exists) {
           handleNewNotification(
             "success",
             "Phone number available!",
-            "Notification",
+            "Notification"
           );
           setShowDetail(true);
         } else {
@@ -60,13 +60,13 @@ export default function Home() {
             handleNewNotification(
               "info",
               "Phone number already taken!",
-              "Notification",
+              "Notification"
             );
           }
         }
         setLoading(false);
       }
-    } catch (e) {
+    } catch (e: any) {
       console.log(e?.errorArgs);
       if (e?.errorArgs[0] === "phone record not found") {
         setShowDetail(true);
