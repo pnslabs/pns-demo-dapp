@@ -275,7 +275,7 @@ const Item = ({
             <input
               onChange={(e: any) => setAddress(e.target.value)}
               className="rounded p-2 text-xs w-64"
-              value={data?.wallet}
+              value={address}
             />
             <button onClick={handleSetAddress} className="pl-3 text-xs">
               {loading ? (
