@@ -6,12 +6,14 @@ import { useAccount, useDisconnect } from "wagmi";
 import { registryAddress, registryAbi } from "../constants";
 import {
   prepareWriteContract,
+  readContract,
   waitForTransaction,
   writeContract,
 } from "@wagmi/core";
 import { keccak256 } from "../utils";
 import { useNotification } from "web3uikit";
 import { PhoneNumberContext } from "../context";
+import { ethers } from "ethers";
 
 const item = [
   {
@@ -54,11 +56,30 @@ export default function Detail({ currentIndex }: { currentIndex?: number }) {
     try {
       setLoading(true);
 
+      const registryCost = await readContract({
+        address: registryAddress,
+        abi: registryAbi.abi,
+        functionName: "getRegistryCost",
+        args: [],
+      });
+      console.log(registryCost, "registry Cost");
+
+      const amountInEth = await readContract({
+        address: registryAddress,
+        abi: registryAbi.abi,
+        functionName: "getAmountinETH",
+        args: [registryCost],
+      });
+      console.log(amountInEth, "amount in eth");
+
       const config = await prepareWriteContract({
         address: registryAddress,
         abi: registryAbi.abi,
         functionName: "setPhoneRecord",
         args: [phoneHash, address, "ETH"],
+        overrides: {
+          value: amountInEth,
+        },
       });
       const data = await writeContract(config);
 
