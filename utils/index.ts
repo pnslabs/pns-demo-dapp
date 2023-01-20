@@ -14,7 +14,7 @@ export const keccak256 = (...args: any) => {
     }
 
     if (typeof arg === "number") {
-      return web3.utils.leftPad(arg.toString(16), 64, 0);
+      return web3.utils.leftPad(arg.toString(16), 64);
     } else {
       return "";
     }
