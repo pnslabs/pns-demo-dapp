@@ -1,4 +1,4 @@
-import { useContext, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { registryAddress, registryAbi } from "../constants";
 import { useAccount } from "wagmi";
 import { readContract } from "@wagmi/core";
@@ -8,6 +8,7 @@ import Header from "../components/header";
 import Detail from "../components/detail";
 import { useRouter } from "next/router";
 import { PhoneNumberContext } from "../context";
+import { ethers } from "ethers";
 
 export default function Home() {
   const { isConnected, address } = useAccount();

@@ -37,8 +37,13 @@ export default function Profile({ currentIndex }: { currentIndex: number }) {
 
   const items = [
     {
+      title: "BNB",
+      address: "",
+      icon: <BtcIcon />,
+    },
+    {
       title: "ETH",
-      address: address,
+      address: "",
       icon: <EthIcon />,
     },
     {

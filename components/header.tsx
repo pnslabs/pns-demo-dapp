@@ -12,6 +12,9 @@ const Header = () => {
         <Image src="/logo.svg" alt="logo" width={36} height={43} />
       </Link>
       <div className="flex items-center gap-12">
+        <Link href="/transfer">
+          <div className="font-semibold text-white">Transfer</div>
+        </Link>
         {isConnected && (
           <Link href="/profile">
             <div className="font-semibold text-white cursor-pointer">
@@ -30,7 +33,7 @@ const Header = () => {
               {!isConnected
                 ? "Connect Wallet"
                 : `${address?.slice(0, 6)}...${address?.slice(
-                    address?.length - 4,
+                    address?.length - 4
                   )}`}
             </div>
           </button>
