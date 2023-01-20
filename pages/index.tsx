@@ -92,7 +92,7 @@ export default function Home() {
                   onChange={(e: any) => setPhone(e.target.value)}
                   value={phone}
                   className="search px-10"
-                  placeholder="Enter phone number"
+                  placeholder="971506461289"
                 />
                 <button onClick={handleNext} className="search-button">
                   {loading ? (
