@@ -60,19 +60,24 @@ export default function Profile({ currentIndex }: { currentIndex: number }) {
 
   const getInfo = async () => {
     if (isConnected) {
-      const info = await readContract({
-        address: registryAddress,
-        abi: registryAbi.abi,
-        functionName: "getRecord",
-        args: [phoneHash],
-      });
-      setData({
-        owner: info?.owner,
-        expirationTime: info?.expirationTime,
-        isExpired: info?.isExpired,
-        isInGracePeriod: info?.isInGracePeriod,
-        phoneHash: info?.phoneHash,
-      });
+      try {
+        const info = await readContract({
+          address: registryAddress,
+          abi: registryAbi.abi,
+          functionName: "getRecord",
+          args: [phoneHash],
+        });
+        setData({
+          owner: info?.owner,
+          expirationTime: info?.expirationTime,
+          isExpired: info?.isExpired,
+          isInGracePeriod: info?.isInGracePeriod,
+          phoneHash: info?.phoneHash,
+        });
+      } catch (e: any) {
+        if (e?.errorArgs[0] === "phone record not found") {
+        }
+      }
     }
   };
 

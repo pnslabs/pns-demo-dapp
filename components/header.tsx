@@ -15,13 +15,6 @@ const Header = () => {
         <Link href="/transfer">
           <div className="font-semibold text-white">Transfer</div>
         </Link>
-        {isConnected && (
-          <Link href="/profile">
-            <div className="font-semibold text-white cursor-pointer">
-              My Account
-            </div>
-          </Link>
-        )}
         {connectors.map((connector) => (
           <button
             key={connector.id}
