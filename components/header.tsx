@@ -1,11 +1,13 @@
 import Image from "next/image";
 import Link from "next/link";
-import { useAccount, useConnect } from "wagmi";
+import { useAccount, useConnect, useChainId } from "wagmi";
 
 const Header = () => {
   const { isConnected, address } = useAccount();
   const { connect, connectors } = useConnect();
+  const chainId = useChainId();
 
+  const isActive = isConnected && chainId === 97;
   return (
     <header className="flex justify-between xl:px-16 px-5 py-4 items-center">
       <Link href="/">
@@ -21,13 +23,15 @@ const Header = () => {
             onClick={() => connect({ connector })}
             className="h-16 py-2 gap-4 cursor-pointer px-10 flex justify-center items-center connect"
           >
-            <div className={`${isConnected ? "active" : "inactive"}`} />
+            <div className={`${isActive ? "active" : "inactive"}`} />
             <div className="text-white">
-              {!isConnected
-                ? "Connect Wallet"
-                : `${address?.slice(0, 6)}...${address?.slice(
-                    address?.length - 4
-                  )}`}
+              {chainId === 97
+                ? !isConnected
+                  ? "Connect Wallet"
+                  : `${address?.slice(0, 6)}...${address?.slice(
+                      address?.length - 4
+                    )}`
+                : "Wrong Network"}
             </div>
           </button>
         ))}
