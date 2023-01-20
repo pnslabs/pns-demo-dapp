@@ -1,6 +1,6 @@
 import { useContext, useEffect, useState } from "react";
 import { registryAddress, registryAbi } from "../constants";
-import { useAccount } from "wagmi";
+import { useAccount, useChainId } from "wagmi";
 import { readContract } from "@wagmi/core";
 import { useNotification } from "web3uikit";
 import { keccak256 } from "../utils";
@@ -14,6 +14,7 @@ export default function Home() {
   const { isConnected, address } = useAccount();
   const dispatch = useNotification();
   const router = useRouter();
+  const chainId = useChainId();
   const { phone, setPhone } = useContext(PhoneNumberContext);
 
   const [showDetail, setShowDetail] = useState(false);
@@ -39,6 +40,13 @@ export default function Home() {
           "Notification"
         );
       } else {
+        if (chainId !== 97) {
+          return handleNewNotification(
+            "info",
+            "Please connect to BSC Testnet!",
+            "Notification"
+          );
+        }
         setLoading(true);
         const info = await readContract({
           address: registryAddress,
@@ -94,7 +102,11 @@ export default function Home() {
                   className="search px-10"
                   placeholder="971506461289"
                 />
-                <button onClick={handleNext} className="search-button">
+                <button
+                  disabled={loading || phone?.length < 11}
+                  onClick={handleNext}
+                  className="search-button"
+                >
                   {loading ? (
                     <div className="flex items-center justify-center my-2">
                       <div className="animate-spin">C</div>
