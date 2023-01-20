@@ -7,13 +7,13 @@ import {
   waitForTransaction,
   writeContract,
   fetchSigner,
-  readContract,
 } from "@wagmi/core";
 import { registryAddress, registryAbi } from "../constants";
 import { ethers } from "ethers";
 import { keccak256 } from "../utils";
 import { useNotification } from "web3uikit";
 import { PhoneNumberContext } from "../context";
+import axios from "axios";
 
 const Otp = () => {
   const dispatch = useNotification();
@@ -21,7 +21,7 @@ const Otp = () => {
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-  const [otp, setOtp] = useState("1234");
+  const [otp, setOtp] = useState("");
   const [showDetail, setShowDetail] = useState(false);
 
   const phoneHash = keccak256(phoneNumber);
@@ -33,6 +33,10 @@ const Otp = () => {
       title,
       position: "topL",
     });
+  };
+  const getOtp = () => {
+    const url = `https://pns-backend.herokuapp.com/api/v1/otp`;
+    axios.post(url, { phoneNumber: `+${phoneNumber}` });
   };
 
   const verifyRecord = async () => {
@@ -83,6 +87,10 @@ const Otp = () => {
     }
   };
 
+  useEffect(() => {
+    getOtp();
+  }, []);
+
   return (
     <>
       {showDetail ? (
@@ -94,7 +102,7 @@ const Otp = () => {
             <div className="otp-box p-11 flex flex-col justify-center items-center">
               <div className="w-96 flex flex-col justify-center items-center">
                 <div className="font-bold mb-10 text-white text-2xl text-center">
-                  Enter Verification Code sent to your phone number
+                  Enter Verification Code sent to {`+${phoneNumber}`}
                 </div>
                 <OtpComponent
                   otp={otp}
@@ -105,7 +113,7 @@ const Otp = () => {
                 <button
                   onClick={() => verifyRecord()}
                   className="complete-btn mt-7"
-                  disabled={loading}
+                  disabled={loading || otp?.length < 6}
                 >
                   {loading ? (
                     <div className="flex items-center justify-center my-2">

@@ -50,7 +50,7 @@ export const OtpComponent = ({
         <OtpInput
           value={otp}
           onChange={handleChange}
-          numInputs={4}
+          numInputs={6}
           separator={<span className="noDisplay">{"-"}</span>}
           hasErrored={error?.length! > 0 && !loading && otp.length === 6}
           shouldAutoFocus
