@@ -9,7 +9,7 @@ export const keccak256 = (...args: any) => {
       if (arg.substring(0, 2) === "0x") {
         return arg.slice(2);
       } else {
-        return web3.utils.toHex(arg).slice(2);
+        return web3.utils?.toHex(arg)?.slice(2);
       }
     }
 
@@ -23,4 +23,9 @@ export const keccak256 = (...args: any) => {
   args = args.join("");
 
   return web3.utils.soliditySha3(args);
+};
+
+export const removePlusSign = (str: string) => {
+  const string = str || "";
+  return string?.split("+")[1];
 };

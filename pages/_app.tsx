@@ -1,11 +1,9 @@
 import "../styles/globals.css";
 import type { AppProps } from "next/app";
 import { NotificationProvider } from "web3uikit";
-import { registryAbi, resolverAbi } from "../constants";
-import Web3 from "web3";
 import { MetaMaskConnector } from "wagmi/connectors/metaMask";
 import { configureChains, createClient, WagmiConfig } from "wagmi";
-import { bscTestnet, localhost } from "wagmi/chains";
+import { bscTestnet } from "wagmi/chains";
 import { jsonRpcProvider } from "wagmi/providers/jsonRpc";
 import Context from "../context";
 

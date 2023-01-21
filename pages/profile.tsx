@@ -17,7 +17,7 @@ import {
   RefreshIcon,
   SolIcon,
 } from "../public/icon";
-import { keccak256 } from "../utils";
+import { keccak256, removePlusSign } from "../utils";
 import { useNotification } from "web3uikit";
 import { PhoneNumberContext } from "../context";
 
@@ -29,7 +29,7 @@ export default function Profile({ currentIndex }: { currentIndex: number }) {
   const [data, setData] = useState<any>({});
   const [resolver, setResolver] = useState<any>([]);
 
-  const phoneHash = keccak256(phoneNumber);
+  const phoneHash = keccak256(removePlusSign(phoneNumber));
 
   const handleDisconnect = () => {
     disconnect();

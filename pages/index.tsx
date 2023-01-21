@@ -1,14 +1,15 @@
-import { useContext, useEffect, useState } from "react";
+import { useContext, useState } from "react";
 import { registryAddress, registryAbi } from "../constants";
 import { useAccount, useChainId } from "wagmi";
 import { readContract } from "@wagmi/core";
 import { useNotification } from "web3uikit";
-import { keccak256 } from "../utils";
+import { keccak256, removePlusSign } from "../utils";
 import Header from "../components/header";
 import Detail from "../components/detail";
 import { useRouter } from "next/router";
 import { PhoneNumberContext } from "../context";
-import { ethers } from "ethers";
+import "react-phone-number-input/style.css";
+import PhoneInput from "react-phone-number-input";
 
 export default function Home() {
   const { isConnected, address } = useAccount();
@@ -29,7 +30,7 @@ export default function Home() {
     });
   };
 
-  const phoneHash = keccak256(phone);
+  const phoneHash = keccak256(removePlusSign(phone));
 
   const handleNext = async () => {
     try {
@@ -96,11 +97,11 @@ export default function Home() {
                 Connect your phone number to a wallet address
               </div>
               <div className="flex mt-10 w-full">
-                <input
-                  onChange={(e: any) => setPhone(e.target.value)}
+                <PhoneInput
+                  placeholder="Enter phone number"
                   value={phone}
-                  className="search px-10"
-                  placeholder="971506461289"
+                  onChange={(value) => setPhone(value)}
+                  className="search"
                 />
                 <button
                   disabled={loading || phone?.length < 11}

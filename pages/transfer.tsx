@@ -1,10 +1,6 @@
-import { useContext, useEffect, useState } from "react";
+import { useState } from "react";
 import { registryAddress, registryAbi } from "../constants";
-import {
-  useAccount,
-  usePrepareSendTransaction,
-  useSendTransaction,
-} from "wagmi";
+import { useAccount } from "wagmi";
 import {
   readContract,
   prepareSendTransaction,
@@ -12,15 +8,14 @@ import {
   waitForTransaction,
 } from "@wagmi/core";
 import { useNotification } from "web3uikit";
-import { keccak256 } from "../utils";
+import { keccak256, removePlusSign } from "../utils";
 import Header from "../components/header";
-import Detail from "../components/detail";
-import { useRouter } from "next/router";
-import { PhoneNumberContext } from "../context";
-import { ethers, utils } from "ethers";
+import { ethers } from "ethers";
+import "react-phone-number-input/style.css";
+import PhoneInput from "react-phone-number-input";
 
 export default function Transfer() {
-  const { isConnected, address } = useAccount();
+  const { isConnected } = useAccount();
   const dispatch = useNotification();
   const [phone, setPhone] = useState("");
   const [amount, setAmount] = useState("");
@@ -35,7 +30,7 @@ export default function Transfer() {
     });
   };
 
-  const phoneHash = keccak256(phone);
+  const phoneHash = keccak256(removePlusSign(phone));
 
   const handleNext = async () => {
     try {
@@ -108,11 +103,11 @@ export default function Transfer() {
           <div className="flex mt-56 max-w-3xl flex-col justify-center items-center">
             <div className="connect-text">Transfer funds to a phone number</div>
             <div className="flex mt-10 flex-col gap-5 w-full">
-              <input
-                onChange={(e: any) => setPhone(e.target.value)}
-                value={phone}
-                className="send px-10"
+              <PhoneInput
                 placeholder="Enter phone number"
+                value={phone}
+                onChange={(value) => setPhone(value!)}
+                className="search"
               />
               <input
                 onChange={(e: any) => setAmount(e.target.value)}

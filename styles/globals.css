@@ -51,6 +51,25 @@ a {
   font-size: 25px;
   font-weight: 700;
 }
+input.PhoneInputInput {
+  height: 100%;
+  background-color: transparent;
+  padding-left: 20px;
+}
+input.PhoneInputInput:focus-visible {
+  outline: none;
+}
+.PhoneInputCountry {
+  width: 100px !important;
+}
+.PhoneInputCountryIcon {
+  width: 100% !important;
+}
+.PhoneInputCountryIcon.PhoneInputCountryIcon--border {
+  border: none !important;
+  box-shadow: none;
+  background-color: transparent;
+}
 .search-button {
   width: 127px;
   height: 87px;

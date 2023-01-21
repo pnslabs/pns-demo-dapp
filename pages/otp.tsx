@@ -10,7 +10,7 @@ import {
 } from "@wagmi/core";
 import { registryAddress, registryAbi } from "../constants";
 import { ethers } from "ethers";
-import { keccak256 } from "../utils";
+import { keccak256, removePlusSign } from "../utils";
 import { useNotification } from "web3uikit";
 import { PhoneNumberContext } from "../context";
 import axios from "axios";
@@ -24,7 +24,7 @@ const Otp = () => {
   const [otp, setOtp] = useState("");
   const [showDetail, setShowDetail] = useState(false);
 
-  const phoneHash = keccak256(phoneNumber);
+  const phoneHash = keccak256(removePlusSign(phoneNumber));
 
   const handleNewNotification = (type: any, message: string, title: string) => {
     dispatch({
@@ -102,7 +102,7 @@ const Otp = () => {
             <div className="otp-box p-11 flex flex-col justify-center items-center">
               <div className="w-96 flex flex-col justify-center items-center">
                 <div className="font-bold mb-10 text-white text-2xl text-center">
-                  Enter Verification Code sent to {`+${phoneNumber}`}
+                  Enter Verification Code sent to {phoneNumber}
                 </div>
                 <OtpComponent
                   otp={otp}
