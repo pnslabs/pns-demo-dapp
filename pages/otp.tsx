@@ -54,8 +54,21 @@ const Otp = () => {
         ethers.utils.arrayify(hashedMessage)
       );
 
-      const url = `https://pns-backend.herokuapp.com/api/v1/signature/verify`;
-      await axios.post(url, { phoneNumber, otp, signature });
+      const config = await prepareWriteContract({
+        address: registryAddress,
+        abi: registryAbi.abi,
+        functionName: "verifyPhone",
+        args: [phoneHash, hashedMessage, true, signature],
+      });
+
+      const data = await writeContract(config);
+
+      await waitForTransaction({
+        hash: data?.hash,
+      });
+
+      // const url = `https://pns-backend.herokuapp.com/api/v1/signature/verify`;
+      // await axios.post(url, { phoneNumber, otp, signature });
 
       handleNewNotification(
         "success",
