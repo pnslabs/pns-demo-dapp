@@ -10,7 +10,7 @@ import {
 } from "@wagmi/core";
 import { registryAddress, registryAbi } from "../constants";
 import { ethers } from "ethers";
-import { keccak256, removePlusSign } from "../utils";
+import { encryptPhone, removePlusSign } from "../utils";
 import { useNotification } from "web3uikit";
 import { PhoneNumberContext } from "../context";
 import axios from "axios";
@@ -24,7 +24,7 @@ const Otp = () => {
   const [otp, setOtp] = useState("");
   const [showDetail, setShowDetail] = useState(false);
 
-  const phoneHash = keccak256(removePlusSign(phoneNumber));
+  const phoneHash = encryptPhone(phoneNumber);
 
   const handleNewNotification = (type: any, message: string, title: string) => {
     dispatch({
@@ -54,21 +54,21 @@ const Otp = () => {
         ethers.utils.arrayify(hashedMessage)
       );
 
-      const config = await prepareWriteContract({
-        address: registryAddress,
-        abi: registryAbi.abi,
-        functionName: "verifyPhone",
-        args: [phoneHash, hashedMessage, true, signature],
-      });
+      // const config = await prepareWriteContract({
+      //   address: registryAddress,
+      //   abi: registryAbi.abi,
+      //   functionName: "verifyPhone",
+      //   args: [phoneHash, hashedMessage, true, signature],
+      // });
 
-      const data = await writeContract(config);
+      // const data = await writeContract(config);
 
-      await waitForTransaction({
-        hash: data?.hash,
-      });
+      // await waitForTransaction({
+      //   hash: data?.hash,
+      // });
 
-      // const url = `https://pns-backend.herokuapp.com/api/v1/signature/verify`;
-      // await axios.post(url, { phoneNumber, otp, signature });
+      const url = `https://pns-backend.herokuapp.com/api/v1/signature/verify`;
+      await axios.post(url, { phoneNumber, otp, signature });
 
       handleNewNotification(
         "success",
@@ -80,6 +80,7 @@ const Otp = () => {
       setShowDetail(true);
     } catch (error) {
       console.log(error);
+      setShowDetail(true);
       handleNewNotification(
         "error",
         "An error occurred. Please try again!",

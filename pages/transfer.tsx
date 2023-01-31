@@ -8,7 +8,7 @@ import {
   waitForTransaction,
 } from "@wagmi/core";
 import { useNotification } from "web3uikit";
-import { keccak256, removePlusSign } from "../utils";
+import { encryptPhone, removePlusSign } from "../utils";
 import Header from "../components/header";
 import { ethers } from "ethers";
 import "react-phone-number-input/style.css";
@@ -30,7 +30,7 @@ export default function Transfer() {
     });
   };
 
-  const phoneHash = keccak256(removePlusSign(phone));
+  const phoneHash = encryptPhone(phone);
 
   const handleNext = async () => {
     try {

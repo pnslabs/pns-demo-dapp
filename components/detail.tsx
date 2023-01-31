@@ -10,7 +10,7 @@ import {
   waitForTransaction,
   writeContract,
 } from "@wagmi/core";
-import { keccak256, removePlusSign } from "../utils";
+import { encryptPhone, removePlusSign } from "../utils";
 import { useNotification } from "web3uikit";
 import { PhoneNumberContext } from "../context";
 import { ethers } from "ethers";
@@ -33,7 +33,7 @@ export default function Detail({ currentIndex }: { currentIndex?: number }) {
   const dispatch = useNotification();
   const { phone: phoneNumber } = useContext(PhoneNumberContext);
 
-  const phoneHash = keccak256(removePlusSign(phoneNumber));
+  const phoneHash = encryptPhone(phoneNumber);
   const { isConnected, address } = useAccount();
   const { disconnect } = useDisconnect();
 

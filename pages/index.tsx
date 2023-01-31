@@ -3,7 +3,7 @@ import { registryAddress, registryAbi } from "../constants";
 import { useAccount, useChainId } from "wagmi";
 import { readContract } from "@wagmi/core";
 import { useNotification } from "web3uikit";
-import { keccak256, removePlusSign } from "../utils";
+import { encryptPhone, removePlusSign } from "../utils";
 import Header from "../components/header";
 import Detail from "../components/detail";
 import { useRouter } from "next/router";
@@ -30,7 +30,7 @@ export default function Home() {
     });
   };
 
-  const phoneHash = keccak256(removePlusSign(phone));
+  const phoneHash = encryptPhone(phone);
 
   const handleNext = async () => {
     try {
@@ -102,6 +102,7 @@ export default function Home() {
                   value={phone}
                   onChange={(value) => setPhone(value)}
                   className="search"
+                  onCountryChange={(e) => console.log(e)}
                 />
                 <button
                   disabled={loading || phone?.length < 11}
