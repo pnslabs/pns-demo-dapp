@@ -56,21 +56,21 @@ export default function Detail({ currentIndex }: { currentIndex?: number }) {
     try {
       setLoading(true);
 
-      const registryCost = await readContract({
-        address: registryAddress,
-        abi: registryAbi.abi,
-        functionName: "getRegistryCost",
-        args: [],
-      });
-      console.log(registryCost, "registry Cost");
+      // const registryCost = await readContract({
+      //   address: registryAddress,
+      //   abi: registryAbi.abi,
+      //   functionName: "getRegistryCost",
+      //   args: [],
+      // });
+      // console.log(registryCost, "registry Cost");
 
-      const amountInEth = await readContract({
-        address: registryAddress,
-        abi: registryAbi.abi,
-        functionName: "getAmountinETH",
-        args: [registryCost],
-      });
-      console.log(amountInEth, "amount in eth");
+      // const amountInEth = await readContract({
+      //   address: registryAddress,
+      //   abi: registryAbi.abi,
+      //   functionName: "getAmountinETH",
+      //   args: [registryCost],
+      // });
+      // console.log(amountInEth, "amount in eth");
 
       const config = await prepareWriteContract({
         address: registryAddress,
@@ -78,7 +78,7 @@ export default function Detail({ currentIndex }: { currentIndex?: number }) {
         functionName: "setPhoneRecord",
         args: [phoneHash, address, "BNB"],
         overrides: {
-          value: amountInEth,
+          value: 0,
         },
       });
       const data = await writeContract(config);
@@ -88,7 +88,8 @@ export default function Detail({ currentIndex }: { currentIndex?: number }) {
       });
       router.push("/profile");
       handleNewNotification("success", "Phone record created!", "Notification");
-    } catch (error) {
+    } catch (error: any) {
+      console.log(error?.data?.message);
       handleNewNotification(
         "error",
         "An error occurred! Please try again later",

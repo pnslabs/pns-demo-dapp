@@ -36,7 +36,7 @@ const Otp = () => {
   };
   const getOtp = () => {
     const url = `https://pns-backend.herokuapp.com/api/v1/otp`;
-    axios.post(url, { phoneNumber: `+${phoneNumber}` });
+    axios.post(url, { phoneNumber });
   };
 
   const verifyRecord = async () => {
@@ -68,7 +68,7 @@ const Otp = () => {
       // });
 
       const url = `https://pns-backend.herokuapp.com/api/v1/signature/verify`;
-      await axios.post(url, { phoneNumber, otp, signature });
+      await axios.post(url, { phoneNumber, otp, signature, hashedMessage });
 
       handleNewNotification(
         "success",
@@ -80,7 +80,7 @@ const Otp = () => {
       setShowDetail(true);
     } catch (error) {
       console.log(error);
-      setShowDetail(true);
+      // setShowDetail(true);
       handleNewNotification(
         "error",
         "An error occurred. Please try again!",
