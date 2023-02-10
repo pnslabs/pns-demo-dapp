@@ -2,17 +2,17 @@ import { useContext, useEffect, useState } from "react";
 import Detail from "../components/detail";
 import Header from "../components/header";
 import OtpComponent from "../components/OtpComponent";
-import {
-  prepareWriteContract,
-  waitForTransaction,
-  writeContract,
-  fetchSigner,
-} from "@wagmi/core";
-import { registryAddress, registryAbi } from "../constants";
+import { fetchSigner } from "@wagmi/core";
 import { ethers } from "ethers";
 import { encryptPhone } from "../utils";
 import { useNotification } from "web3uikit";
 import { CountryCtx, PhoneNumberContext } from "../context";
+import {
+  prepareWriteContract,
+  waitForTransaction,
+  writeContract,
+} from "@wagmi/core";
+import { registryAddress, registryAbi } from "../constants";
 import axios from "axios";
 
 const Otp = () => {
@@ -42,6 +42,7 @@ const Otp = () => {
 
   const verifyRecord = async () => {
     try {
+      console.log(phoneHash, "this is the phone hash");
       const message = ethers.utils.solidityPack(
         ["bytes32", "uint256"],
         [phoneHash, otp]
@@ -78,7 +79,6 @@ const Otp = () => {
       setShowDetail(true);
     } catch (error) {
       console.log(error);
-      setShowDetail(true);
       handleNewNotification(
         "error",
         "An error occurred. Please try again!",

@@ -10,7 +10,7 @@ import {
   waitForTransaction,
   writeContract,
 } from "@wagmi/core";
-import { encryptPhone, removePlusSign } from "../utils";
+import { encryptPhone } from "../utils";
 import { useNotification } from "web3uikit";
 import { PhoneNumberContext } from "../context";
 import { ethers } from "ethers";
@@ -59,18 +59,19 @@ export default function Detail({ currentIndex }: { currentIndex?: number }) {
       const registryCost = await readContract({
         address: registryAddress,
         abi: registryAbi.abi,
-        functionName: "getRegistryCost",
+        functionName: "registryCostInUSD",
         args: [],
       });
-      console.log(registryCost, "registry Cost");
 
       const amountInEth = await readContract({
         address: registryAddress,
         abi: registryAbi.abi,
-        functionName: "getAmountinETH",
-        args: [registryCost],
+        functionName: "convertUSDToETH",
+        args: [registryCost.toString()],
       });
-      console.log(amountInEth, "amount in eth");
+      const formatCost =
+        Number(ethers.utils.formatEther(amountInEth.toString())) + 0.00005;
+      console.log(ethers.utils.parseEther(formatCost.toString()));
 
       const config = await prepareWriteContract({
         address: registryAddress,
@@ -78,7 +79,7 @@ export default function Detail({ currentIndex }: { currentIndex?: number }) {
         functionName: "setPhoneRecord",
         args: [phoneHash, address, "BNB"],
         overrides: {
-          value: amountInEth,
+          value: ethers.utils.parseEther(formatCost.toString()),
         },
       });
       const data = await writeContract(config);
@@ -86,9 +87,11 @@ export default function Detail({ currentIndex }: { currentIndex?: number }) {
       await waitForTransaction({
         hash: data?.hash,
       });
+
       router.push("/profile");
       handleNewNotification("success", "Phone record created!", "Notification");
-    } catch (error) {
+    } catch (error: any) {
+      console.log(error);
       handleNewNotification(
         "error",
         "An error occurred! Please try again later",

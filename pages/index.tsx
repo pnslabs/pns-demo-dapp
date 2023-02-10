@@ -3,7 +3,7 @@ import { registryAddress, registryAbi } from "../constants";
 import { useAccount, useChainId } from "wagmi";
 import { readContract } from "@wagmi/core";
 import { useNotification } from "web3uikit";
-import { encryptPhone, removePlusSign } from "../utils";
+import { encryptPhone } from "../utils";
 import Header from "../components/header";
 import Detail from "../components/detail";
 import { useRouter } from "next/router";

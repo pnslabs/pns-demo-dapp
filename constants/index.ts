@@ -1,7 +1,7 @@
 const registryAbi = require("./PNSRegistry.json");
 const resolverAbi = require("./PNSResolver.json");
 
-const registryAddress = "0x70fF4eeC22588d9A8BCc8E98Ed32a615851AbFA2";
-const resolverAddress = "0x8FEc9cB0c519a3B573E086992973612CB5E37b5B";
+const registryAddress = "0xfe1129260d31E6a30f4bD3910372C4C0c778264f";
+const resolverAddress = "0x0070937D9dc2004F3D5440f0C8995d5fc52b3c8D";
 
 export { registryAddress, resolverAddress, registryAbi, resolverAbi };

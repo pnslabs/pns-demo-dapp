@@ -8,7 +8,7 @@ import {
   waitForTransaction,
 } from "@wagmi/core";
 import { useNotification } from "web3uikit";
-import { encryptPhone, removePlusSign } from "../utils";
+import { encryptPhone } from "../utils";
 import Header from "../components/header";
 import { ethers } from "ethers";
 import "react-phone-number-input/style.css";

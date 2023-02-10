@@ -17,7 +17,7 @@ import {
   RefreshIcon,
   SolIcon,
 } from "../public/icon";
-import { encryptPhone, removePlusSign } from "../utils";
+import { encryptPhone } from "../utils";
 import { useNotification } from "web3uikit";
 import { PhoneNumberContext } from "../context";
 
