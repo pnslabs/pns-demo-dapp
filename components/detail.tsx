@@ -56,21 +56,31 @@ export default function Detail({ currentIndex }: { currentIndex?: number }) {
     try {
       setLoading(true);
 
-      // const registryCost = await readContract({
-      //   address: registryAddress,
-      //   abi: registryAbi.abi,
-      //   functionName: "getRegistryCost",
-      //   args: [],
-      // });
-      // console.log(registryCost, "registry Cost");
+      const isverified = await readContract({
+        address: registryAddress,
+        abi: registryAbi.abi,
+        functionName: "isRecordVerified",
+        args: [phoneHash],
+      });
 
-      // const amountInEth = await readContract({
-      //   address: registryAddress,
-      //   abi: registryAbi.abi,
-      //   functionName: "getAmountinETH",
-      //   args: [registryCost],
-      // });
-      // console.log(amountInEth, "amount in eth");
+      console.log(isverified);
+
+      return;
+
+      const registryCost = await readContract({
+        address: registryAddress,
+        abi: registryAbi.abi,
+        functionName: "registryCostInUSD",
+        args: [],
+      });
+
+      const amountInEth = await readContract({
+        address: registryAddress,
+        abi: registryAbi.abi,
+        functionName: "convertUSDToETH",
+        args: [registryCost.toString()],
+      });
+      const formatCost = ethers.utils.formatEther(amountInEth.toString());
 
       const config = await prepareWriteContract({
         address: registryAddress,
@@ -78,7 +88,7 @@ export default function Detail({ currentIndex }: { currentIndex?: number }) {
         functionName: "setPhoneRecord",
         args: [phoneHash, address, "BNB"],
         overrides: {
-          value: 0,
+          value: ethers.utils.parseEther(formatCost.toString()),
         },
       });
       const data = await writeContract(config);
@@ -86,10 +96,11 @@ export default function Detail({ currentIndex }: { currentIndex?: number }) {
       await waitForTransaction({
         hash: data?.hash,
       });
+
       router.push("/profile");
       handleNewNotification("success", "Phone record created!", "Notification");
     } catch (error: any) {
-      console.log(error?.data?.message);
+      console.log(error);
       handleNewNotification(
         "error",
         "An error occurred! Please try again later",

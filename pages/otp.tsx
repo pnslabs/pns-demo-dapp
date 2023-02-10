@@ -93,6 +93,7 @@ const Otp = () => {
 
   useEffect(() => {
     getOtp();
+    // setShowDetail(true);
   }, []);
 
   return (
