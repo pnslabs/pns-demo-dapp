@@ -10,7 +10,7 @@ import {
   waitForTransaction,
   writeContract,
 } from "@wagmi/core";
-import { encryptPhone, removePlusSign } from "../utils";
+import { encryptPhone } from "../utils";
 import { useNotification } from "web3uikit";
 import { PhoneNumberContext } from "../context";
 import { ethers } from "ethers";
@@ -56,17 +56,6 @@ export default function Detail({ currentIndex }: { currentIndex?: number }) {
     try {
       setLoading(true);
 
-      const isverified = await readContract({
-        address: registryAddress,
-        abi: registryAbi.abi,
-        functionName: "isRecordVerified",
-        args: [phoneHash],
-      });
-
-      console.log(isverified);
-
-      return;
-
       const registryCost = await readContract({
         address: registryAddress,
         abi: registryAbi.abi,
@@ -80,7 +69,9 @@ export default function Detail({ currentIndex }: { currentIndex?: number }) {
         functionName: "convertUSDToETH",
         args: [registryCost.toString()],
       });
-      const formatCost = ethers.utils.formatEther(amountInEth.toString());
+      const formatCost =
+        Number(ethers.utils.formatEther(amountInEth.toString())) + 0.00005;
+      console.log(ethers.utils.parseEther(formatCost.toString()));
 
       const config = await prepareWriteContract({
         address: registryAddress,

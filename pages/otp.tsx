@@ -2,15 +2,9 @@ import { useContext, useEffect, useState } from "react";
 import Detail from "../components/detail";
 import Header from "../components/header";
 import OtpComponent from "../components/OtpComponent";
-import {
-  prepareWriteContract,
-  waitForTransaction,
-  writeContract,
-  fetchSigner,
-} from "@wagmi/core";
-import { registryAddress, registryAbi } from "../constants";
+import { fetchSigner } from "@wagmi/core";
 import { ethers } from "ethers";
-import { encryptPhone, removePlusSign } from "../utils";
+import { encryptPhone } from "../utils";
 import { useNotification } from "web3uikit";
 import { PhoneNumberContext } from "../context";
 import axios from "axios";
@@ -41,6 +35,7 @@ const Otp = () => {
 
   const verifyRecord = async () => {
     try {
+      console.log(phoneHash, "this is the phone hash");
       const message = ethers.utils.solidityPack(
         ["bytes32", "uint256"],
         [phoneHash, otp]
@@ -53,19 +48,6 @@ const Otp = () => {
       const signature = await signer!.signMessage(
         ethers.utils.arrayify(hashedMessage)
       );
-
-      // const config = await prepareWriteContract({
-      //   address: registryAddress,
-      //   abi: registryAbi.abi,
-      //   functionName: "verifyPhone",
-      //   args: [phoneHash, hashedMessage, true, signature],
-      // });
-
-      // const data = await writeContract(config);
-
-      // await waitForTransaction({
-      //   hash: data?.hash,
-      // });
 
       const url = `https://pns-backend.herokuapp.com/api/v1/signature/verify`;
       await axios.post(url, { phoneNumber, otp, signature, hashedMessage });
@@ -80,7 +62,6 @@ const Otp = () => {
       setShowDetail(true);
     } catch (error) {
       console.log(error);
-      // setShowDetail(true);
       handleNewNotification(
         "error",
         "An error occurred. Please try again!",
@@ -93,7 +74,6 @@ const Otp = () => {
 
   useEffect(() => {
     getOtp();
-    // setShowDetail(true);
   }, []);
 
   return (
