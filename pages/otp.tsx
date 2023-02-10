@@ -6,12 +6,19 @@ import { fetchSigner } from "@wagmi/core";
 import { ethers } from "ethers";
 import { encryptPhone } from "../utils";
 import { useNotification } from "web3uikit";
-import { PhoneNumberContext } from "../context";
+import { CountryCtx, PhoneNumberContext } from "../context";
+import {
+  prepareWriteContract,
+  waitForTransaction,
+  writeContract,
+} from "@wagmi/core";
+import { registryAddress, registryAbi } from "../constants";
 import axios from "axios";
 
 const Otp = () => {
   const dispatch = useNotification();
   const { phone: phoneNumber } = useContext(PhoneNumberContext);
+  const { country, setCountry } = useContext(CountryCtx);
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -29,8 +36,8 @@ const Otp = () => {
     });
   };
   const getOtp = () => {
-    const url = `https://pns-backend.herokuapp.com/api/v1/otp`;
-    axios.post(url, { phoneNumber });
+    const url = `${process.env.NEXT_PUBLIC_SERVER_URL}/otp`;
+    axios.post(url, { phoneNumber, country });
   };
 
   const verifyRecord = async () => {
@@ -49,8 +56,18 @@ const Otp = () => {
         ethers.utils.arrayify(hashedMessage)
       );
 
-      const url = `https://pns-backend.herokuapp.com/api/v1/signature/verify`;
-      await axios.post(url, { phoneNumber, otp, signature, hashedMessage });
+      const config = await prepareWriteContract({
+        address: registryAddress,
+        abi: registryAbi.abi,
+        functionName: "verifyPhone",
+        args: [phoneHash, hashedMessage, true, signature],
+      });
+
+      const data = await writeContract(config);
+
+      await waitForTransaction({
+        hash: data?.hash,
+      });
 
       handleNewNotification(
         "success",

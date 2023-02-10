@@ -7,7 +7,7 @@ import { encryptPhone } from "../utils";
 import Header from "../components/header";
 import Detail from "../components/detail";
 import { useRouter } from "next/router";
-import { PhoneNumberContext } from "../context";
+import { CountryCtx, PhoneNumberContext } from "../context";
 import "react-phone-number-input/style.css";
 import PhoneInput from "react-phone-number-input";
 
@@ -17,6 +17,7 @@ export default function Home() {
   const router = useRouter();
   const chainId = useChainId();
   const { phone, setPhone } = useContext(PhoneNumberContext);
+  const { country, setCountry } = useContext(CountryCtx);
 
   const [showDetail, setShowDetail] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -102,7 +103,7 @@ export default function Home() {
                   value={phone}
                   onChange={(value) => setPhone(value)}
                   className="search"
-                  onCountryChange={(e) => console.log(e)}
+                  onCountryChange={(e) => setCountry(e)}
                 />
                 <button
                   disabled={loading || phone?.length < 11}

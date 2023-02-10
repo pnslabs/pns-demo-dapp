@@ -5,7 +5,7 @@ import { MetaMaskConnector } from "wagmi/connectors/metaMask";
 import { configureChains, createClient, WagmiConfig } from "wagmi";
 import { bscTestnet } from "wagmi/chains";
 import { jsonRpcProvider } from "wagmi/providers/jsonRpc";
-import Context from "../context";
+import { CountryContext, PhoneContext } from "../context";
 
 export const projectId = process.env.NEXT_PUBLIC_PROJECT_ID;
 
@@ -28,9 +28,11 @@ export default function App({ Component, pageProps }: AppProps) {
   return (
     <WagmiConfig client={wagmiClient}>
       <NotificationProvider>
-        <Context>
-          <Component {...pageProps} />
-        </Context>
+        <PhoneContext>
+          <CountryContext>
+            <Component {...pageProps} />
+          </CountryContext>
+        </PhoneContext>
       </NotificationProvider>
     </WagmiConfig>
   );
