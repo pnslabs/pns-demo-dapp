@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useContext, useState } from "react";
 import { registryAddress, registryAbi } from "../constants";
 import { useAccount } from "wagmi";
 import {
@@ -13,6 +13,7 @@ import Header from "../components/header";
 import { ethers } from "ethers";
 import "react-phone-number-input/style.css";
 import PhoneInput from "react-phone-number-input";
+import { ChainIdContext } from "../context";
 
 export default function Transfer() {
   const { isConnected } = useAccount();
@@ -20,6 +21,7 @@ export default function Transfer() {
   const [phone, setPhone] = useState("");
   const [amount, setAmount] = useState("");
   const [loading, setLoading] = useState(false);
+  const { chainId } = useContext(ChainIdContext);
 
   const handleNewNotification = (type: any, message: string, title: string) => {
     dispatch({
@@ -41,6 +43,13 @@ export default function Transfer() {
           "Notification"
         );
       } else {
+        if (chainId !== 97) {
+          return handleNewNotification(
+            "info",
+            "Please connect to BSC Testnet!",
+            "Notification"
+          );
+        }
         setLoading(true);
         const info = await readContract({
           address: registryAddress,
@@ -51,7 +60,6 @@ export default function Transfer() {
         console.log(info);
 
         const response: any = info?.find((resp: any) => resp.label === "BNB");
-        console.log(response?.wallet!);
         if (response) {
           const config = await prepareSendTransaction({
             request: {
@@ -84,7 +92,6 @@ export default function Transfer() {
     } catch (e: any) {
       console.log(e);
       if (e?.errorArgs?.[0] === "phone record not found") {
-        // setShowDetail(true);
       }
       handleNewNotification(
         "info",

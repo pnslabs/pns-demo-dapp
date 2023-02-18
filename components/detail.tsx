@@ -12,7 +12,7 @@ import {
 } from "@wagmi/core";
 import { encryptPhone } from "../utils";
 import { useNotification } from "web3uikit";
-import { PhoneNumberContext } from "../context";
+import { ChainIdContext, PhoneNumberContext } from "../context";
 import { ethers } from "ethers";
 
 const item = [
@@ -32,6 +32,7 @@ export default function Detail({ currentIndex }: { currentIndex?: number }) {
   const router = useRouter();
   const dispatch = useNotification();
   const { phone: phoneNumber } = useContext(PhoneNumberContext);
+  const { chainId } = useContext(ChainIdContext);
 
   const phoneHash = encryptPhone(phoneNumber);
   const { isConnected, address } = useAccount();
@@ -54,6 +55,13 @@ export default function Detail({ currentIndex }: { currentIndex?: number }) {
 
   const createRecord = async () => {
     try {
+      if (chainId !== 97) {
+        return handleNewNotification(
+          "info",
+          "Please connect to BSC Testnet!",
+          "Notification"
+        );
+      }
       setLoading(true);
 
       const registryCost = await readContract({

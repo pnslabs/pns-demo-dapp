@@ -6,13 +6,14 @@ import { fetchSigner } from "@wagmi/core";
 import { ethers } from "ethers";
 import { encryptPhone } from "../utils";
 import { useNotification } from "web3uikit";
-import { CountryCtx, PhoneNumberContext } from "../context";
+import { ChainIdContext, CountryCtx, PhoneNumberContext } from "../context";
 import axios from "axios";
 
 const Otp = () => {
   const dispatch = useNotification();
   const { phone: phoneNumber } = useContext(PhoneNumberContext);
   const { country } = useContext(CountryCtx);
+  const { chainId } = useContext(ChainIdContext);
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -36,6 +37,13 @@ const Otp = () => {
 
   const verifyRecord = async () => {
     try {
+      if (chainId !== 97) {
+        return handleNewNotification(
+          "info",
+          "Please connect to BSC Testnet!",
+          "Notification"
+        );
+      }
       const message = ethers.utils.solidityPack(
         ["bytes32", "uint256"],
         [phoneHash, otp]

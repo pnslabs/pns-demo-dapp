@@ -2,7 +2,8 @@ import Image from "next/image";
 import Link from "next/link";
 import { useAccount, useConnect, useChainId } from "wagmi";
 import { ethers } from "ethers";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
+import { ChainIdContext } from "../context";
 
 const params = [
   {
@@ -21,7 +22,7 @@ const params = [
 const Header = () => {
   const { isConnected, address } = useAccount();
   const { connect, connectors } = useConnect();
-  const [chainId, setChainId] = useState(0);
+  const { chainId, setChainId } = useContext(ChainIdContext);
 
   const windowObj = typeof window !== "undefined" ? (window as any) : null;
   const provider: any = windowObj
@@ -39,21 +40,17 @@ const Header = () => {
     }
   };
 
-  const switchNetwork = async (connector?: any) => {
+  const switchNetwork = async () => {
     try {
       await windowObj.ethereum?.request({
         method: "wallet_switchEthereumChain",
         params: [{ chainId: "0x61" }],
       });
-      await getChainId();
     } catch (error: any) {
       // This error code indicates that the chain has not been added to MetaMask.
       if (error.code === 4902) {
         await addWallet();
-        if (connector) {
-          await connect({ connector });
-        }
-        await getChainId();
+        await connect({ connector: connectors[0] });
       }
       console.log("error from switch network", error);
     }
@@ -63,7 +60,6 @@ const Header = () => {
     try {
       const network = await provider.getNetwork();
       const chain = network.chainId;
-      console.log(chain);
       setChainId(chain);
       return chain;
     } catch (error) {
@@ -71,13 +67,12 @@ const Header = () => {
     }
   };
 
-  const connectMetamask = async (connector: any) => {
+  const connectMetamask = async () => {
     try {
       if (isConnected && chainId !== 97) {
-        switchNetwork(connector);
+        return await switchNetwork();
       }
-      await connect({ connector });
-      await getChainId();
+      await connect({ connector: connectors[0] });
     } catch (error) {
       console.log("error from connect metamask", error);
     }
@@ -86,8 +81,12 @@ const Header = () => {
   const hasChainChanged = async () => {
     try {
       windowObj.ethereum?.on("chainChanged", async (chainId: any) => {
-        console.log("chain changed", chainId);
-        await getChainId();
+        const chain = parseInt(chainId);
+        connect({ connector: connectors[0] });
+        setChainId(chain);
+        if (chain === 97) {
+          await connect({ connector: connectors[0] });
+        }
       });
     } catch (error) {
       console.log("error from chain changed", error);
@@ -96,9 +95,13 @@ const Header = () => {
 
   useEffect(() => {
     hasChainChanged();
+    getChainId();
   }, []);
 
   const isActive = isConnected && chainId === 97;
+  const addressSlice = `${address?.slice(0, 6)}...${address?.slice(
+    address?.length - 4
+  )}`;
   return (
     <header className="flex justify-between xl:px-16 px-5 py-4 items-center">
       <Link href="/">
@@ -108,26 +111,20 @@ const Header = () => {
         <Link href="/transfer">
           <div className="font-semibold text-white">Transfer</div>
         </Link>
-        {connectors.map((connector) => (
-          <button
-            key={connector.id}
-            onClick={() => connectMetamask(connector)}
-            className="h-16 py-2 gap-4 cursor-pointer px-10 flex justify-center items-center connect"
-          >
-            <div className={`${isActive ? "active" : "inactive"}`} />
-            <div className="text-white">
-              {chainId === 97
-                ? !isConnected
-                  ? "Connect Wallet"
-                  : `${address?.slice(0, 6)}...${address?.slice(
-                      address?.length - 4
-                    )}`
-                : isConnected
-                ? "Wrong Network"
-                : "Connect Wallet"}
-            </div>
-          </button>
-        ))}
+        <button
+          onClick={connectMetamask}
+          className="h-16 py-2 gap-4 cursor-pointer px-10 flex justify-center items-center connect"
+        >
+          <div className={`${isActive ? "active" : "inactive"}`} />
+
+          <div className="text-white">
+            {isConnected
+              ? chainId === 97
+                ? addressSlice
+                : "Switch network"
+              : "Connect Wallet"}
+          </div>
+        </button>
       </div>
     </header>
   );

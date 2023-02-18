@@ -7,7 +7,7 @@ import { encryptPhone } from "../utils";
 import Header from "../components/header";
 import Detail from "../components/detail";
 import { useRouter } from "next/router";
-import { CountryCtx, PhoneNumberContext } from "../context";
+import { ChainIdContext, CountryCtx, PhoneNumberContext } from "../context";
 import "react-phone-number-input/style.css";
 import PhoneInput from "react-phone-number-input";
 
@@ -15,9 +15,9 @@ export default function Home() {
   const { isConnected, address } = useAccount();
   const dispatch = useNotification();
   const router = useRouter();
-  const chainId = useChainId();
   const { phone, setPhone } = useContext(PhoneNumberContext);
   const { country, setCountry } = useContext(CountryCtx);
+  const { chainId } = useContext(ChainIdContext);
 
   const [showDetail, setShowDetail] = useState(false);
   const [loading, setLoading] = useState(false);

@@ -19,7 +19,7 @@ import {
 } from "../public/icon";
 import { encryptPhone } from "../utils";
 import { useNotification } from "web3uikit";
-import { PhoneNumberContext } from "../context";
+import { ChainIdContext, PhoneNumberContext } from "../context";
 
 export default function Profile({ currentIndex }: { currentIndex: number }) {
   const { isConnected, address } = useAccount();
@@ -204,6 +204,7 @@ const Item = ({
   phoneHash: string;
 }) => {
   const dispatch = useNotification();
+  const { chainId } = useContext(ChainIdContext);
 
   const [data, setData] = useState<any>({});
   const [address, setAddress] = useState<string>("");
@@ -221,6 +222,13 @@ const Item = ({
 
   const handleSetAddress = async () => {
     try {
+      if (chainId !== 97) {
+        return handleNewNotification(
+          "info",
+          "Please switch to BSC Testnet",
+          "Notification"
+        );
+      }
       setLoading(true);
       const config = await prepareWriteContract({
         address: registryAddress,
@@ -234,7 +242,6 @@ const Item = ({
       const txt = await waitForTransaction({
         hash: data?.hash,
       });
-      console.log(txt);
       setData({
         wallet: address,
       });
