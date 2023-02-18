@@ -105,7 +105,7 @@ const Header = () => {
   return (
     <header className="flex justify-between xl:px-16 px-5 py-4 items-center">
       <Link href="/">
-        <Image src="/logo.svg" alt="logo" width={36} height={43} />
+        <Image src="/logo.svg" alt="logo" width={84} height={37} />
       </Link>
       <div className="flex items-center gap-12">
         <Link href="/transfer">
